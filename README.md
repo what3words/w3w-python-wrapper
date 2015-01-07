@@ -8,8 +8,8 @@ Use the what3words API in your Python program (see http://what3words.com/api/ref
 ### getPosition(words=???)
 This function takes the words parameter as either:
 - a string of 3 words `'table.book.chair'`
+- an array of 3 words `['table', 'book', 'chair']`
 - a oneword `'*BobsHouse'`
-- or an array or 3 words `['table', 'book', 'chair']`
 
 ### getWords(lat=???, lng=???)
 This function takes the latitude and longitude:
