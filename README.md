@@ -19,14 +19,14 @@ This function takes the latitude and longitude:
 
 ### Get position
 ```python
-w3w = What3Words(apikey='YOURKEY')
+w3w = What3Words(apikey='YOURAPIKEY')
 res = w3w.getPosition(words='prom.cape.pump')
 print(res)
 ```
 
 ### Get 3 words
 ```python
-w3w = What3Words(apikey='YOURKEY')
+w3w = What3Words(apikey='YOURAPIKEY')
 res = w3w.getWords(lat='51.484463', lng='-0.195405')
 print(res)
 ```
