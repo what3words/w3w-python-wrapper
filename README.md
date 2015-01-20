@@ -1,7 +1,7 @@
 w3w-python-wrapper
 ==================
 
-Use the what3words API in your Python program (see http://what3words.com/api/reference)
+Use the what3words API in your Python program (see http://developer.what3words.com/api)
 
 ## Functions
 
