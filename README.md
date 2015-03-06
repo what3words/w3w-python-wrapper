@@ -9,7 +9,6 @@ Use the what3words API in your Python program (see http://developer.what3words.c
 This function takes the words parameter as either:
 - a string of 3 words `'table.book.chair'`
 - an array of 3 words `['table', 'book', 'chair']`
-- a oneword `'*BobsHouse'`
 
 ### getWords(lat=???, lng=???)
 This function takes the latitude and longitude:
@@ -19,14 +18,14 @@ This function takes the latitude and longitude:
 
 ### Get position
 ```python
-w3w = What3Words(apikey='YOURAPIKEY')
+w3w = what3words(apikey='YOURAPIKEY')
 res = w3w.getPosition(words='prom.cape.pump')
 print(res)
 ```
 
 ### Get 3 words
 ```python
-w3w = What3Words(apikey='YOURAPIKEY')
+w3w = what3words(apikey='YOURAPIKEY')
 res = w3w.getWords(lat='51.484463', lng='-0.195405')
 print(res)
 ```

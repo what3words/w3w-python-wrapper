@@ -2,8 +2,8 @@ import urllib
 import urllib2
 import json
 
-class What3Words(object):
-    """What3Words API"""
+class what3words(object):
+    """what3words API"""
 
     def __init__(self, host='api.what3words.com', apikey=''):
         self.host = 'http://' + host
