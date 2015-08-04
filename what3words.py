@@ -1,38 +1,98 @@
-import urllib
-import urllib2
 import json
 
-class what3words(object):
-    """what3words API"""
+from six.moves.urllib.request import urlopen
+from six.moves.urllib.parse import urljoin, urlencode
 
-    def __init__(self, host='api.what3words.com', apikey=''):
-        self.host = 'http://' + host
-        self.apikey = apikey
 
-    def getPosition(self, words='*libertytech', onewordpassword='',
-                    lang='en', corners='false', email='', password=''):
-        if isinstance(words, list):
-            words = "%s.%s.%s" % (words[0], words[1], words[2])
-            print "string is: %s" % (words)
-        params = { 'corners': corners, 'string': words }
-        if (onewordpassword != ''):
-            params.update({'onewordpassword', onewordpassword,
-                           'email', email,
-                           'password', password});
-        return self.postRequest(self.host + '/w3w', params)
+__all__ = ('__version__', 'What3Words')
 
-    def getWords(self, lat='', lng='', corners='false', lang='en'):
-        position = "%s,%s" % (lat, lng)
-        params = { 'position': position, 'corners': corners, 'lang': lang }
-        return self.postRequest(self.host + '/position', params)
+__version__ = (0, 0, 1)
 
-    def getLanguages(self):
-        return self.postRequest(self.host + '/get-languages', dict())
 
-    def postRequest(self, url, params):
-        params.update({'key': self.apikey})
-        encparams = urllib.urlencode(params)
-        try: response = urllib.urlopen(url, encparams).read()
-        except URLError as e:
-            raise e
+class What3Words(object):
+    """What3Words API"""
+
+    def __init__(self, api_key, host='api.what3words.com', lang='en'):
+        self.host = 'http://{0}'.format(host)
+        self.api_key = api_key
+        self.lang = lang
+
+    def position(self, words, corners=False, lang=None, one_word_password=None,
+                 email=None, password=None):
+        """Take a 3 word address and turn it into a pair of coordinates.
+
+        :param words: 3 word address
+        :type words: list, tuple or str
+        :param bool corners: return the lat and lng coordinates of the south-west
+            and north-east corners of the what3words grid square.
+        :param lang: response language
+        :param one_word_password: password for OneWord service
+        :type one_word_password: str or None
+        :param email: E-mail for OneWord service if required
+        :type email: str or None
+        :param password: Password for OneWord service if required
+        :type password: str or None
+        :reference: http://developer.what3words.com/api/#3toposition
+        :rtype: dict
+        """
+
+        if isinstance(words, (list, tuple)):
+            words = '.'.join(words)
+
+        params = {
+            'corners': 'true' if corners else 'false',
+            'string': words,
+            'lang': lang or self.lang,
+        }
+
+        if one_word_password is not None:
+            params.update({
+                'onewordpassword': one_word_password,
+                'email': email,
+                'password': password,
+            })
+
+        return self._request('/w3w', params)
+
+    def words(self, lat, lng, corners=False, lang='en'):
+        """Take latitude and longitude coordinates and turn them into a 3 word address.
+
+        :param float lat: latitude coordinate
+        :param float lng: longitude coordinate
+        :param bool corners: return the lat and lng coordinates of the south-west
+            and north-east corners of the what3words grid square.
+        :param lang: response language
+        :reference: http://developer.what3words.com/api/#positionto3
+        :rtype: dict
+        """
+
+        params = {
+            'position': '{0},{1}'.format(lat, lng),
+            'corners': 'true' if corners else 'false',
+            'lang': lang or self.lang,
+        }
+
+        return self._request('/position', params)
+
+    def languages(self):
+        """Retrieve a list of available 3 word languages.
+
+        :reference: http://developer.what3words.com/api/#getlanguages
+        :rtype: dict
+        """
+
+        return self._request('/get-languages')
+
+    def _request(self, url_path, params=None):
+        if params is None:
+            params = {}
+
+        params.update({
+            'key': self.api_key,
+        })
+
+        url = urljoin(self.host, url_path)
+
+        response = urlopen(url, urlencode(params)).read()
+
         return json.loads(response)
