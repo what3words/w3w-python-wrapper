@@ -1,8 +1,7 @@
 import json
 
-from six.moves.urllib.request import urlopen
-from six.moves.urllib.parse import urljoin, urlencode
-
+from requests.compat import urljoin
+import requests
 
 __all__ = ('__version__', 'What3Words')
 
@@ -90,9 +89,8 @@ class What3Words(object):
         params.update({
             'key': self.api_key,
         })
-
         url = urljoin(self.host, url_path)
-
-        response = urlopen(url, urlencode(params)).read()
-
+        r = requests.get(url, params=params)
+        response = r.text
         return json.loads(response)
+

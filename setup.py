@@ -12,7 +12,7 @@ setup(
     description='What3words API library',
     license='MIT',
     packages=find_packages(),
-    install_requires=['six'],
+    install_requires=['requests'],
     classifiers=(
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
