@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
 from what3words import __version__
 
@@ -11,7 +11,7 @@ setup(
     url='https://github.com/what3words/w3w-python-wrapper',
     description='What3words API library',
     license='MIT',
-    packages=find_packages(),
+    py_modules=['what3words'],
     install_requires=['requests'],
     classifiers=(
         'Development Status :: 3 - Alpha',
