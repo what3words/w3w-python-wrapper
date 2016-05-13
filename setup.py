@@ -1,18 +1,30 @@
-from setuptools import setup
+from codecs import open
+import re
 
-from what3words import __version__
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
 
+version = ''
+with open('what3words/__init__.py', 'r') as fd:
+    version = re.search(r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]',
+                        fd.read(), re.MULTILINE).group(1)
+
+requires = ['requests']
 
 setup(
     name='what3words',
-    version='.'.join([str(x) for x in __version__]),
+    version=version,
     author='What3Words',
     author_email='support@what3words.com',
     url='https://github.com/what3words/w3w-python-wrapper',
-    description='What3words API library',
+    description='What3words API wrapper library',
     license='MIT',
-    py_modules=['what3words'],
-    install_requires=['requests'],
+    packages=['what3words'],
+    package_dir={'what3words': 'what3words'},
+    install_requires=requires,
+    keywords='what3words geocoder',
     classifiers=(
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',

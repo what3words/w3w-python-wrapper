@@ -1,7 +1,34 @@
-w3w-python-wrapper
-==================
+# ![what3words](https://map.what3words.com/images/map/marker-border.png)w3w-python-wrapper
 
-Use the what3words API in your Python program (see http://developer.what3words.com/api)
+A Python library to use the [what3words REST API](https://docs.what3words.com/api/v2/).
+
+# Overview
+
+The what3words PHP library gives you programmatic access to convert a 3 word address to coordinates (_forward geocoding_), to convert coordinates to a 3 word address (_reverse geocoding_), and to determine the currently support 3 word address languages.
+
+## Authentication
+
+To use this library you’ll need a what3words API key, which can be signed up for [here](https://map.what3words.com/register?dev=true).
+
+# Installation
+
+## PyPi Install
+
+To install what3words, simply:
+
+```bash
+$ pip install what3words
+```
+
+## GitHub Install
+
+Installing the latest version from Github:
+
+```bash
+$ git clone https://github.com/what3words/w3w-python-wrapper.git
+$ cd w3w-python-wrapper
+$ python setup.py install
+```
 
 ## Functions
 
@@ -14,20 +41,23 @@ This function takes the words parameter as either:
 This function takes the latitude and longitude:
 - 2 parameters:  `lat=0.1234`, `lng=1.5678`
 
+### langauges()
+This function returns all available languages
+
 ## Code examples
 
-```from what3words import What3Words```
-
-### Get position
+### Forward Geocode
 ```python
-w3w = What3Words(api_key='YOURAPIKEY')
-res = w3w.position(words='prom.cape.pump')
-print(res)
+>>> import what3words
+>>> w3w = what3words.Geocoder(api_key='YOUR-API-KEY')
+>>> res = w3w.position(words='prom.cape.pump')
+>>> print(res)
 ```
 
-### Get 3 words
+### Reverse Geocode
 ```python
-w3w = what3words(api_key='YOURAPIKEY')
-res = w3w.words(lat='51.484463', lng='-0.195405')
-print(res)
+>>> import what3words
+>>> w3w = what3words.Geocoder(api_key='YOUR-API-KEY')
+>>> res = w3w.words(lat='51.484463', lng='-0.195405')
+>>> print(res)
 ```
