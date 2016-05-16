@@ -3,59 +3,62 @@
 
 import json
 
-from requests.compat import urljoin
+# from requests.compat import urljoin
 import requests
-
-__all__ = ('__version__', 'What3Words')
-
-__version__ = (0, 0, 4)
 
 
 class Geocoder(object):
     """
     What3Words API wrapper
     ==========
-
     """
 
-    def __init__(self, api_key, lang='en', host='api.what3words.com'):
+    def __init__(self, api_key, lang='en',
+                 end_point='https://beta.what3words.com/v2'):
+        """
 
-        self.host = 'https://{0}'.format(host)
+        Params
+        ------
+        :param api_key: A valid API key
+        :param lang: default langauge use with the Geocoder
+        :param end_point: what3words api end point
+        """
+
+        self.end_point = end_point
         self.api_key = api_key
         self.lang = lang
 
-    def position(self, words, corners=False, lang=None):
+    def forward(self, addr, display='full', format='json', lang=None):
         """
         Take a 3 word address and turn it into a pair of coordinates.
 
         Params
         ------
-        :param words: 3 word address
-        :type words: list, tuple or str
-        :param bool corners: return the lat and lng coordinates of the
-                             south-west and north-east corners of the
-                             what3words grid square.
-        :param lang: response language
+        :param string addr: A 3 word address as a string
+        :param string lang: A supported 3 word address language as an
+                            ISO 639-1 2 letter code. Defaults to self.lang
+        :param string display: Return display type; can be one of
+                               full (the default) or terse
+        :param string format: Return data format type; can be one of
+                              json (the default), geojson or xml
 
         :rtype: dict
 
         References
         ----------
-        API Reference: http://developer.what3words.com/api/#3toposition
+        API Reference: https://docs.what3words.com/api/v2/#forward
         """
 
-        if isinstance(words, (list, tuple)):
-            words = '.'.join(words)
-
         params = {
-            'corners': 'true' if corners else 'false',
-            'string': words,
+            'addr': addr,
+            'display': display,
+            'format': format,
             'lang': lang or self.lang,
         }
 
-        return self._request('/w3w', params)
+        return self._request('/forward', params)
 
-    def words(self, lat, lng, corners=False, lang='en'):
+    def reverse(self, lat, lng, display='full', format='json', lang=None):
         """
         Take latitude and longitude coordinates and turn them into
         a 3 word address.
@@ -64,25 +67,78 @@ class Geocoder(object):
         ------
         :param float lat: latitude coordinate
         :param float lng: longitude coordinate
-        :param bool corners: return the lat and lng coordinates of the
+        :param string display: return the lat and lng coordinates of the
                              south-west and north-east corners of the
                              what3words grid square.
-        :param lang: response language
+        :param string format: Return data format type; can be one of
+                              json (the default), geojson or xml
+        :param string lang: A supported 3 word address language as an
+                            ISO 639-1 2 letter code. Defaults to self.lang
 
         :rtype: dict
 
         References
         ----------
-        API Reference: http://developer.what3words.com/api/#positionto3
+        API Reference: https://docs.what3words.com/api/v2/#reverse
         """
 
         params = {
-            'position': '{0},{1}'.format(lat, lng),
-            'corners': 'true' if corners else 'false',
+            'coords': '{0},{1}'.format(lat, lng),
+            'display': display,
+            'format': format,
             'lang': lang or self.lang,
         }
+        return self._request('/reverse', params)
 
-        return self._request('/position', params)
+    def autosuggest(self, suggest, focus=None, clip=None, display='full',
+                    format='json', lang=None):
+        """
+        Returns a list of 3 word addresses based on user input and other
+        parameters.
+
+        Params
+        ------
+        :param string suggest: The full or partial 3 word address to obtain
+                               suggestions for. At minimum this must be the
+                               first two complete words plus at least one
+                               character from the third word
+        :param string focus: A location, specified as a latitude,longitude used
+                             to refine the results. If specified, the results
+                             will be weighted to give preference to those near
+                             the specified location in addition to considering
+                             similarity to the suggest string. If omitted the
+                             default behaviour is to weight results for
+                             similarity to the suggest string only.
+        :param string clip: Restricts results to those within a geographical
+                            area. If omitted defaults to clip=none
+        :param string format: Return data format type; can be one of
+                              json (the default), geojson or xml
+        :param string lang: A supported 3 word address language as an
+                            ISO 639-1 2 letter code. Defaults to self.lang
+
+        :rtype: dict
+
+        References
+        ----------
+        API Reference: https://docs.what3words.com/api/v2/#reverse
+        """
+
+        params = {
+            'suggest': suggest,
+            'display': display,
+            'format': format,
+            'lang': lang or self.lang,
+        }
+        if focus:
+            params.update({
+                'focus': focus
+            })
+        if clip:
+            params.update({
+                'clip': clip
+            })
+
+        return self._request('/autosuggest', params)
 
     def languages(self):
         """
@@ -92,19 +148,29 @@ class Geocoder(object):
 
         References
         ----------
-        API Reference: http://developer.what3words.com/api/#getlanguages
+        API Reference: https://docs.what3words.com/api/v2/#lang
         """
 
-        return self._request('/get-languages')
+        return self._request('/languages')
 
     def _request(self, url_path, params=None):
+        """
+        Executes request
+
+        Params
+        ------
+        :param string url_path: API method URI
+        :param dict params: parameters
+
+        :rtype: dict
+        """
         if params is None:
             params = {}
 
         params.update({
             'key': self.api_key,
         })
-        url = urljoin(self.host, url_path)
+        url = self.end_point+url_path
         r = requests.get(url, params=params)
         response = r.text
         return json.loads(response)
