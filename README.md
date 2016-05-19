@@ -4,7 +4,7 @@ A Python library to use the [what3words REST API](https://docs.what3words.com/ap
 
 # Overview
 
-The what3words PHP library gives you programmatic access to convert a 3 word address to coordinates (_forward geocoding_), to convert coordinates to a 3 word address (_reverse geocoding_), and to determine the currently support 3 word address languages.
+The what3words Python library gives you programmatic access to convert a 3 word address to coordinates (_forward geocoding_), to convert coordinates to a 3 word address (_reverse geocoding_), and to determine the currently support 3 word address languages.
 
 ## Authentication
 
