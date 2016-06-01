@@ -124,7 +124,7 @@ class Geocoder(object):
         """
 
         params = {
-            'suggest': suggest,
+            'addr': suggest,
             'display': display,
             'format': format,
             'lang': lang or self.lang,
