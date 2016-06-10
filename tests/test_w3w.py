@@ -9,40 +9,59 @@ import json
 from os import environ
 
 api_key = environ['W3W_API_KEY']
-words = 'daring.lion.race'
-lat = 51.508341
-lng = -0.125499
-corners = [[51.508328, -0.12552], [51.508355, -0.125477]]
+addr = 'daring.lion.race'
+lat = "51.508341"
+lng = "-0.125499"
+english = {u'code': u'en', u'name': u'English', u'native_name': u'English'}
+suggest = 'indx.home.rqft'
 
 
 def testInvalidKey():
     badkey = 'BADKEY'
     geocoder = what3words.Geocoder(badkey)
-    result = geocoder.position(words)
-    assert result['error'] == u'X1'
-    assert result['message'] == u'Missing or invalid key'
+    result = geocoder.forward(addr)
+    assert result['code'] == 2
+    assert result['message'] == u'Authentication failed; invalid API key'
 
 
 def testForwardGeocode():
     geocoder = what3words.Geocoder(api_key)
-    result = geocoder.position(words)
-    assert result['type'] == u'3 words'
+    result = geocoder.forward(addr)
     assert result['language'] == u'en'
-    assert result['words'] == [u'daring', u'lion', u'race']
-    assert result['position'] == [lat, lng]
-    assert result['corners'] == corners
+    assert result['words'] == u'daring.lion.race'
+    assert result['geometry']['lat'] == lat
+    assert result['geometry']['lng'] == lng
 
 
 def testReverseGeocode():
     geocoder = what3words.Geocoder(api_key)
-    result = geocoder.words(lat, lng)
+    result = geocoder.reverse(lat, lng)
     assert result['language'] == u'en'
-    assert result['words'] == [u'daring', u'lion', u'race']
-    assert result['position'] == [lat, lng]
-    assert result['corners'] == corners
+    assert result['words'] == u'daring.lion.race'
+    assert result['geometry']['lat'] == lat
+    assert result['geometry']['lng'] == lng
 
+
+def testLanguages():
+    geocoder = what3words.Geocoder(api_key)
+    result = geocoder.languages()
+    assert result['languages'] is not None
+    if english in result['languages']:
+        assert True
+    else:
+        assert False
+
+
+def testAutoSuggest():
+    geocoder = what3words.Geocoder(api_key)
+    result = geocoder.autosuggest(suggest)
+    print result
+
+    assert result['suggestions'] is not None
 
 if __name__ == '__main__':
     testInvalidKey()
+    testLanguages()
     testForwardGeocode()
     testReverseGeocode()
+    testAutoSuggest()
