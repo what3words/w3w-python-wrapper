@@ -3,7 +3,6 @@
 
 import json
 
-# from requests.compat import urljoin
 import requests
 
 
@@ -14,9 +13,9 @@ class Geocoder(object):
     """
 
     def __init__(self, api_key, lang='en',
-                 end_point='https://beta.what3words.com/v2'):
+                 end_point='https://api.what3words.com/v2'):
         """
-
+        Constructor
         Params
         ------
         :param api_key: A valid API key
