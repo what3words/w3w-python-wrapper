@@ -5,8 +5,10 @@ python:
   - "3.2"
   - "3.3"
   - "3.4"
-
 # command to install dependencies
 install: "pip install -r requirements-dev.txt"
 # command to run tests
 script: make test
+notifications:
+  slack:
+    secure: GQXj8rWtu5rgdP/RQuzSf7gzFFtb3FLkKF9piPjNlzBffmSlA9TK9/t42LMNMVIOpkOA5XOlK06+9y6N25tzTL/z+CKlm9jDyfOwDjXds70RzTl4Y038sN7R3GPQWusFqstHMQVgXaLcjj9QZ45KIdbObqUkdRvcEAI8Fp45edJOnyTiNxaBC0G4af3QgWXOwuZQC5z553jDnMUs6cZ40YNT4fBpgCovJRL3iS1PcCqQhGllbzCtZYr4m4rNuSb0r321pj2RWS6V8yiWaaQ9l8PzjOolo11gT26Mjq41KMHa9t4LU/OfQoA8+Ln1fyq6Y8mcFgzvDrso0lwZ6GslM3DgAeZPZ2n6rQHp2w6o7NLZXBs2Omo9W15jj2NqAbtrvYQ3nDKDFFjXeUfhVvNSu4zs31RfqWQbfz0pt8fXNaIOKAIiGamk/s4BT473OkxxqxH+cGt9D27KtXEPO4Sfzb6m0Z5ZB+JG0W8LdxdfmpHJgNU+cxJwPxZxQsOojp9GLJUS7o3+PFocv2B53Iq4zy9IpX7Muku6FBchuVRZvYhOFaYksVXXsj+NSyIc1mYHqHfVLyvWW2Q7aQu/fCxntQTgD63WD94ig6rodqFEvCFjaWquQpafaLNddb/cuyst1Uz/25HlIVA3U3YU6Qy0OQhUYdaRw/FHrX30ypgY1ao=
