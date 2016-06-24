@@ -3,7 +3,7 @@
 
 import json
 
-import unirest
+import requests
 
 
 class Geocoder(object):
@@ -271,6 +271,6 @@ class Geocoder(object):
             'key': self.api_key,
         })
         url = self.end_point+url_path
-        r = unirest.get(url, params=params)
-        response = r.body
-        return response
+        r = requests.get(url, params=params)
+        response = r.text
+        return json.loads(response)

@@ -1,4 +1,4 @@
-unirest >= 1.1.7
+requests >= 2.5.3
 coveralls >= 0.4
 setuptools >= 0.9.8
 pytest
