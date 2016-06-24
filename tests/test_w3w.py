@@ -59,9 +59,19 @@ def testAutoSuggest():
 
     assert result['suggestions'] is not None
 
+
+def testStandardBlend():
+    geocoder = what3words.Geocoder(api_key)
+    result = geocoder.standardblend(suggest)
+    print result
+
+    assert result['blends'] is not None
+
+
 if __name__ == '__main__':
     testInvalidKey()
     testLanguages()
     testForwardGeocode()
     testReverseGeocode()
     testAutoSuggest()
+    testStandardBlend()

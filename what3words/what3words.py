@@ -119,7 +119,7 @@ class Geocoder(object):
 
         References
         ----------
-        API Reference: https://docs.what3words.com/api/v2/#reverse
+        API Reference: https://docs.what3words.com/api/v2/#autosuggest
         """
 
         params = {
@@ -139,6 +139,50 @@ class Geocoder(object):
 
         return self._request('/autosuggest', params)
 
+    def standardblend(self, suggest, focus=None, display='full',
+                      format='json', lang=None):
+        """
+        Returns a blend of the three most relevant 3 word address candidates
+        for a given location, based on a full or partial 3 word address.
+
+        Params
+        ------
+        :param string suggest: The full or partial 3 word address to obtain
+                               suggestions for. At minimum this must be the
+                               first two complete words plus at least one
+                               character from the third word
+        :param string focus: A location, specified as a latitude,longitude used
+                             to refine the results. If specified, the results
+                             will be weighted to give preference to those near
+                             the specified location in addition to considering
+                             similarity to the suggest string. If omitted the
+                             default behaviour is to weight results for
+                             similarity to the suggest string only.
+        :param string format: Return data format type; can be one of
+                              json (the default), geojson or xml
+        :param string lang: A supported 3 word address language as an
+                            ISO 639-1 2 letter code. Defaults to self.lang
+
+        :rtype: dict
+
+        References
+        ----------
+        API Reference: https://docs.what3words.com/api/v2/#standardblend
+        """
+
+        params = {
+            'addr': suggest,
+            'display': display,
+            'format': format,
+            'lang': lang or self.lang,
+        }
+        if focus:
+            params.update({
+                'focus': focus
+            })
+
+        return self._request('/standardblend', params)
+
     def languages(self):
         """
         Retrieve a list of available 3 word languages.
@@ -151,6 +195,34 @@ class Geocoder(object):
         """
 
         return self._request('/languages')
+
+    def defaultLanguage(self, lang = None):
+        """
+        Sets/returns default language
+
+        Params
+        ------
+        :param string lang: new default language
+
+        :retype: string
+        """
+        if(lang != None):
+            self.lang = lang
+        return self.lang
+
+    def end_point(self, end_point = None):
+        """
+        Sets/returns api endpoint
+
+        Params
+        ------
+        :param string end_point: new api endpoint
+
+        :retype: string url
+        """
+        if(end_point != None):
+            self.end_point = end_point
+        return self.end_point
 
     def _request(self, url_path, params=None):
         """
