@@ -196,7 +196,7 @@ class Geocoder(object):
 
         return self._request('/languages')
 
-    def defaultLanguage(self, lang = None):
+    def defaultLanguage(self, lang=None):
         """
         Sets/returns default language
 
@@ -206,11 +206,11 @@ class Geocoder(object):
 
         :retype: string
         """
-        if(lang != None):
+        if(lang is not None):
             self.lang = lang
         return self.lang
 
-    def end_point(self, end_point = None):
+    def end_point(self, end_point=None):
         """
         Sets/returns api endpoint
 
@@ -220,7 +220,7 @@ class Geocoder(object):
 
         :retype: string url
         """
-        if(end_point != None):
+        if(end_point is not None):
             self.end_point = end_point
         return self.end_point
 

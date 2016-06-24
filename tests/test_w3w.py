@@ -10,8 +10,8 @@ from os import environ
 
 api_key = environ['W3W_API_KEY']
 addr = 'daring.lion.race'
-lat = "51.508341"
-lng = "-0.125499"
+lat = 51.508341
+lng = -0.125499
 english = {u'code': u'en', u'name': u'English', u'native_name': u'English'}
 suggest = 'indx.home.rqft'
 
