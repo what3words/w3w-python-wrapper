@@ -32,7 +32,7 @@ $ python setup.py install
 
 ## Forward geocoding
 Forward geocodes a 3 word address to a position, expressed as coordinates of latitude and longitude.
-#### forward(addr=???)
+
 This function takes the words parameter as a string of 3 words `'table.book.chair'`
 
 The returned payload from the `forwardGeocode` method is described in the [what3words REST API documentation](https://docs.what3words.com/api/v2/#forward-result).
@@ -40,7 +40,7 @@ The returned payload from the `forwardGeocode` method is described in the [what3
 ##Reverse geocoding
 
 Reverse geocodes coordinates, expressed as latitude and longitude to a 3 word address.
-#### words(lat=???, lng=???)
+
 This function takes the latitude and longitude:
 - 2 parameters:  `lat=0.1234`, `lng=1.5678`
 
@@ -103,6 +103,6 @@ $ export W3W_API_KEY=<Secret API Key>
 >>> from os import environ
 >>> api_key = environ['W3W_API_KEY']
 >>> w3w = what3words.Geocoder(api_key)
->>> res = w3w.words(lat='51.484463', lng='-0.195405')
+>>> res = w3w.reverse(lat=51.484463, lng=-0.195405)
 >>> print(res)
 ```

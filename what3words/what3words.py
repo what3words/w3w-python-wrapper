@@ -3,7 +3,7 @@
 
 import json
 
-import requests
+import unirest
 
 
 class Geocoder(object):
@@ -183,6 +183,35 @@ class Geocoder(object):
 
         return self._request('/standardblend', params)
 
+    def grid(self, bbox, display='full', format='json'):
+        """
+        Take latitude and longitude coordinates and turn them into
+        a 3 word address.
+
+        Params
+        ------
+        :param string bbox: Bounding box, specified by the northeast and
+                            southwest corner coordinates, for which the grid
+                            should be returned.
+        :param string display: return the lat and lng coordinates of the
+                             south-west and north-east corners of the
+                             what3words grid square.
+        :param string format: Return data format type; can be one of
+                              json (the default), geojson or xml
+        :rtype: dict
+
+        References
+        ----------
+        API Reference: https://docs.what3words.com/api/v2/#grid
+        """
+
+        params = {
+            'bbox': bbox,
+            'display': display,
+            'format': format
+        }
+        return self._request('/grid', params)
+
     def languages(self):
         """
         Retrieve a list of available 3 word languages.
@@ -210,7 +239,7 @@ class Geocoder(object):
             self.lang = lang
         return self.lang
 
-    def end_point(self, end_point=None):
+    def defaultEndpoint(self, end_point=None):
         """
         Sets/returns api endpoint
 
@@ -242,6 +271,6 @@ class Geocoder(object):
             'key': self.api_key,
         })
         url = self.end_point+url_path
-        r = requests.get(url, params=params)
-        response = r.text
-        return json.loads(response)
+        r = unirest.get(url, params=params)
+        response = r.body
+        return response

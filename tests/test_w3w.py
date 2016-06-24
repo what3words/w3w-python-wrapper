@@ -55,7 +55,6 @@ def testLanguages():
 def testAutoSuggest():
     geocoder = what3words.Geocoder(api_key)
     result = geocoder.autosuggest(suggest)
-    print result
 
     assert result['suggestions'] is not None
 
@@ -63,15 +62,21 @@ def testAutoSuggest():
 def testStandardBlend():
     geocoder = what3words.Geocoder(api_key)
     result = geocoder.standardblend(suggest)
-    print result
 
     assert result['blends'] is not None
 
 
+def testGrid():
+    geocoder = what3words.Geocoder(api_key)
+    result = geocoder.grid("52.208867,0.117540,52.207988,0.116126")
+
+    assert result['lines'] is not None
+
 if __name__ == '__main__':
     testInvalidKey()
     testLanguages()
-    testForwardGeocode()
-    testReverseGeocode()
-    testAutoSuggest()
-    testStandardBlend()
+    # testForwardGeocode()
+    # testReverseGeocode()
+    # testAutoSuggest()
+    # testStandardBlend()
+    # testGrid()
