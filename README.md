@@ -1,4 +1,4 @@
-# ![what3words](https://map.what3words.com/images/map/marker-border.png)w3w-python-wrapper[![Build Status](https://travis-ci.org/what3words/w3w-python-wrapper.svg?branch=master]
+# ![what3words](https://map.what3words.com/images/map/marker-border.png)w3w-python-wrapper ![Build Status](https://travis-ci.org/what3words/w3w-python-wrapper.svg?branch=master)
 
 A Python library to use the [what3words REST API](https://docs.what3words.com/api/v2/).
 
