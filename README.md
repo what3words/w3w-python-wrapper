@@ -93,7 +93,7 @@ $ export W3W_API_KEY=<Secret API Key>
 >>> from os import environ
 >>> api_key = environ['W3W_API_KEY']
 >>> w3w = what3words.Geocoder(api_key)
->>> res = w3w.position(words='prom.cape.pump')
+>>> res = w3w.forward(addr='prom.cape.pump')
 >>> print(res)
 ```
 
