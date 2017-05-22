@@ -139,6 +139,56 @@ class Geocoder(object):
 
         return self._request('/autosuggest', params)
 
+    def autosuggest_ml(self, suggest, focus=None, clip=None, display='full',
+                       format='json', lang=None):
+        """
+        Returns a list of 3 word addresses based on user input and other
+        parameters.
+
+        Params
+        ------
+        :param string suggest: The full or partial 3 word address to obtain
+                               suggestions for. At minimum this must be the
+                               first two complete words plus at least one
+                               character from the third word
+        :param string focus: A location, specified as a latitude,longitude used
+                             to refine the results. If specified, the results
+                             will be weighted to give preference to those near
+                             the specified location in addition to considering
+                             similarity to the suggest string. If omitted the
+                             default behaviour is to weight results for
+                             similarity to the suggest string only.
+        :param string clip: Restricts results to those within a geographical
+                            area. If omitted defaults to clip=none
+        :param string format: Return data format type; can be one of
+                              json (the default), geojson or xml
+        :param string lang: A supported 3 word address language as an
+                            ISO 639-1 2 letter code. Defaults to self.lang
+
+        :rtype: dict
+
+        References
+        ----------
+        API Reference: https://docs.what3words.com/api/v2/#autosuggest
+        """
+
+        params = {
+            'addr': suggest,
+            'display': display,
+            'format': format,
+            'lang': lang or self.lang,
+        }
+        if focus:
+            params.update({
+                'focus': focus
+            })
+        if clip:
+            params.update({
+                'clip': clip
+            })
+
+        return self._request('/autosuggest-ml', params)
+
     def standardblend(self, suggest, focus=None, display='full',
                       format='json', lang=None):
         """
@@ -182,6 +232,50 @@ class Geocoder(object):
             })
 
         return self._request('/standardblend', params)
+
+    def standardblend_ml(self, suggest, focus=None, display='full',
+                         format='json', lang=None):
+        """
+        Returns a blend of the three most relevant 3 word address candidates
+        for a given location, based on a full or partial 3 word address.
+
+        Params
+        ------
+        :param string suggest: The full or partial 3 word address to obtain
+                               suggestions for. At minimum this must be the
+                               first two complete words plus at least one
+                               character from the third word
+        :param string focus: A location, specified as a latitude,longitude used
+                             to refine the results. If specified, the results
+                             will be weighted to give preference to those near
+                             the specified location in addition to considering
+                             similarity to the suggest string. If omitted the
+                             default behaviour is to weight results for
+                             similarity to the suggest string only.
+        :param string format: Return data format type; can be one of
+                              json (the default), geojson or xml
+        :param string lang: A supported 3 word address language as an
+                            ISO 639-1 2 letter code. Defaults to self.lang
+
+        :rtype: dict
+
+        References
+        ----------
+        API Reference: https://docs.what3words.com/api/v2/#standardblend
+        """
+
+        params = {
+            'addr': suggest,
+            'display': display,
+            'format': format,
+            'lang': lang or self.lang,
+        }
+        if focus:
+            params.update({
+                'focus': focus
+            })
+
+        return self._request('/standardblend-ml', params)
 
     def grid(self, bbox, display='full', format='json'):
         """

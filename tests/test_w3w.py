@@ -59,9 +59,23 @@ def testAutoSuggest():
     assert result['suggestions'] is not None
 
 
+def testAutoSuggestML():
+    geocoder = what3words.Geocoder(api_key)
+    result = geocoder.autosuggest_ml(suggest)
+
+    assert result['suggestions'] is not None
+
+
 def testStandardBlend():
     geocoder = what3words.Geocoder(api_key)
     result = geocoder.standardblend(suggest)
+
+    assert result['blends'] is not None
+
+
+def testStandardBlendML():
+    geocoder = what3words.Geocoder(api_key)
+    result = geocoder.standardblend_ml(suggest)
 
     assert result['blends'] is not None
 
@@ -72,11 +86,14 @@ def testGrid():
 
     assert result['lines'] is not None
 
+
 if __name__ == '__main__':
     testInvalidKey()
-    testLanguages()
+    # testLanguages()
     # testForwardGeocode()
     # testReverseGeocode()
     # testAutoSuggest()
     # testStandardBlend()
+    # testAutoSuggestML()
+    # testStandardBlendML()
     # testGrid()
