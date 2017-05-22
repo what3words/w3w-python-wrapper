@@ -9,7 +9,7 @@ init:
 
 test:
 	# py.test -n auto tests --doctest-modules --pep8 what3words -v --cov what3words --cov-report term-missing
-	py.test 
+	py.test
 
 ci: init
 		py.test --junitxml=junit.xml
@@ -19,11 +19,3 @@ clean:
 	rm -rf build-*
 	rm -rf *egg*
 	rm -rf dist
-
-publish:
-	python setup.py register
-	python setup.py sdist upload
-	python setup.py bdist_wheel upload
-
-register:
-	python setup.py register
