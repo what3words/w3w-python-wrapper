@@ -22,3 +22,15 @@ print('\n')
 res = geocoder.autosuggest('indx.home.rqft')
 print(res)
 print('\n')
+
+res = geocoder.autosuggest_ml('indx.home.rqft')
+print(res)
+print('\n')
+
+res = geocoder.standardblend('index.home.raf')
+print(res)
+print('\n')
+
+res = geocoder.standardblend_ml('index.home.raf')
+print(res)
+print('\n')
