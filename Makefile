@@ -26,6 +26,3 @@ publish:
 
 register:
 	python setup.py register
-
-# docs:
-# 	make -C docs html
