@@ -1,8 +1,11 @@
 language: python
 python:
 - '2.7'
+- '3.4'
+- '3.5'
+- '3.6'
 install: pip install -r requirements.txt
-script: make test
+script: make ci
 notifications:
   slack:
     secure: Ji0MBuox4Us3rlRzXtJFH9fHz3XyX/R5AaEVJZrkYzgW590C86WyHoOP9uugSBZWm640NQfd6INoIJ81c+gY/9Ld7qcpL1CszM04ilVVpD0q/iKNuBXMMZwFPoXAsltEY9hcGGVJkZmtT19IqTJLoN8aOGemUsXC3/mkvN7C/vTsyfwY+Ku8ZjgYFTolOmGkMiSRTT43/XSAs/JtyBJL51MJvZvJ/kLU+r1VYAjO4X366NbkvcQmr+kRxmshwTx70MW330gWNIEnsAxfGpffoAWY6Lv0Lx4baVFuw6ITqDc90WIKu/ey8W77GYyyCFtqaHNLdScgDP+qWX6yHpeBCjp+Z/ENACEsSit1f7C1SUVKxY5a6Q0JIf2G9M5ljnffB5m1mFZLHG7CKjVedCWgh9YsHf+8SLHCwZUXL7JMarpMpyPcQpjRExk7ZtKA4gpa2SvqMj9wM1e7l+ry+B1DnmAczg+UsgJqet8v6sfWsp4reS95myeRELXytqniYcD56btWNA21DeBJ74Dccpv2ldgY1iohBe69YjoRorDPeCf1x7IO8Qin2vqgieLJ8Ae/UghSnT6X+RAy2ckdWMU69fQDxZyu385I1GLiA87Nyovi2kQ/hQbsAHyAlBl0FR5ZMTyTa/vz2sH19fILtTkPd9M7FcFEg/fl/C1Xb9ZPMmI=
