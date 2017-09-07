@@ -1,5 +1,3 @@
-# .PHONY: docs
-
 setup:
 	python setup.py install
 
@@ -12,7 +10,7 @@ test:
 	py.test
 
 ci: init
-		py.test --junitxml=junit.xml
+	py.test --junitxml=junit.xml
 
 clean:
 	python setup.py clean --all

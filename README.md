@@ -1,6 +1,6 @@
-# <img src="https://what3words.com/assets/images/w3w_square_red.png" width="64" height="64" alt="what3words">&nbsp;w3w-python-wrapper ![Build Status](https://travis-ci.org/what3words/w3w-python-wrapper.svg?branch=master)
+# <img src="https://what3words.com/assets/images/w3w_square_red.png" width="64" height="64" alt="what3words">&nbsp;w3w-python-wrapper [![Build Status](https://travis-ci.org/what3words/w3w-python-wrapper.svg?branch=master)](https://travis-ci.org/what3words/w3w-python-wrapper)
 
-A Python library to use the [what3words REST API](https://docs.what3words.com/api/v2/).
+A Python 2.7 library to use the [what3words REST API](https://docs.what3words.com/api/v2/).
 
 # Overview
 
@@ -146,6 +146,7 @@ Anyone and everyone is welcome to contribute.
 
 # Revision History
 
+* `v2.1.1`  07/09/17 - update README : this library is compatible with Python 2
 * `v2.1.0`  28/03/17 - Added multilingual version of `autosuggest` and `standardblend`
 * `v2.0.2`  27/10/16 - Pusblished on PyPi
 * `v2.0.0`  10/06/16 - Updated wrapper to use what3words API v2
