@@ -12,7 +12,7 @@ api_key = environ['W3W_API_KEY']
 addr = 'daring.lion.race'
 lat = 51.508341
 lng = -0.125499
-english = {u'code': u'en', u'name': u'English', u'native_name': u'English'}
+english = {'code': 'en', 'name': 'English', 'native_name': 'English'}
 suggest = 'indx.home.rqft'
 
 
@@ -21,14 +21,14 @@ def testInvalidKey():
     geocoder = what3words.Geocoder(badkey)
     result = geocoder.forward(addr)
     assert result['code'] == 2
-    assert result['message'] == u'Authentication failed; invalid API key'
+    assert result['message'] == 'Authentication failed; invalid API key'
 
 
 def testForwardGeocode():
     geocoder = what3words.Geocoder(api_key)
     result = geocoder.forward(addr)
-    assert result['language'] == u'en'
-    assert result['words'] == u'daring.lion.race'
+    assert result['language'] == 'en'
+    assert result['words'] == 'daring.lion.race'
     assert result['geometry']['lat'] == lat
     assert result['geometry']['lng'] == lng
 
@@ -36,8 +36,8 @@ def testForwardGeocode():
 def testReverseGeocode():
     geocoder = what3words.Geocoder(api_key)
     result = geocoder.reverse(lat, lng)
-    assert result['language'] == u'en'
-    assert result['words'] == u'daring.lion.race'
+    assert result['language'] == 'en'
+    assert result['words'] == 'daring.lion.race'
     assert result['geometry']['lat'] == lat
     assert result['geometry']['lng'] == lng
 
