@@ -148,10 +148,11 @@ Anyone and everyone is welcome to contribute.
 
 # Revision History
 
+* `v2.2.1`  08/09/17 - Python 3 setup install fixed thanks to [@joedborg](https://github.com/joedborg)
 * `v2.2.0`  07/09/17 - Python 3 support, thanks to [@joedborg](https://github.com/joedborg)
 * `v2.1.1`  07/09/17 - update README : this library is compatible with Python 2
 * `v2.1.0`  28/03/17 - Added multilingual version of `autosuggest` and `standardblend`
-* `v2.0.2`  27/10/16 - Pusblished on PyPi
+* `v2.0.2`  27/10/16 - Published on PyPi
 * `v2.0.0`  10/06/16 - Updated wrapper to use what3words API v2
 
 ## Licensing

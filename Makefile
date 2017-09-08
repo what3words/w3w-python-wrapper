@@ -11,6 +11,10 @@ test:
 ci: init
 	py.test --junitxml=junit.xml
 
+publish:
+		python setup.py sdist upload -r pypi
+		python setup.py bdist_wheel upload -r pypi
+
 clean:
 	python setup.py clean --all
 	rm -rf build-*

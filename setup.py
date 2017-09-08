@@ -26,7 +26,7 @@ setup(
     package_dir={'what3words': 'what3words'},
     install_requires=requires,
     keywords='what3words geocoder',
-    classifiers=(
+    classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
@@ -38,5 +38,5 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: Implementation :: PyPy',
         'Topic :: Software Development :: Libraries',
-    ),
+    ],
 )
