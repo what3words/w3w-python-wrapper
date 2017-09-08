@@ -11,7 +11,8 @@ with open('what3words/__init__.py', 'r') as fd:
     version = re.search(r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]',
                         fd.read(), re.MULTILINE).group(1)
 
-requires = ['unirest']
+with open('requirements.txt') as f:
+    requires = f.read().splitlines()
 
 setup(
     name='what3words',
