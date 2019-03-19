@@ -8,305 +8,103 @@ import requests
 
 class Geocoder(object):
     """
-    What3Words API wrapper
+    What3Words v3 API wrapper
     ==========
     """
 
-    def __init__(self, api_key, lang='en',
-                 end_point='https://api.what3words.com/v2'):
+    def __init__(self, api_key, language='en',
+                 end_point='https://api.what3words.com/v3'):
         """
         Constructor
         Params
         ------
         :param api_key: A valid API key
-        :param lang: default langauge use with the Geocoder
+        :param language: default langauge use with the Geocoder
         :param end_point: what3words api end point
         """
 
         self.end_point = end_point
         self.api_key = api_key
-        self.lang = lang
+        self.language = language
 
-    def forward(self, addr, display='full', format='json', lang=None):
+    def convert_to_coordinates(self, words, format='json'):
         """
         Take a 3 word address and turn it into a pair of coordinates.
 
         Params
         ------
-        :param string addr: A 3 word address as a string
-        :param string lang: A supported 3 word address language as an
-                            ISO 639-1 2 letter code. Defaults to self.lang
-        :param string display: Return display type; can be one of
-                               full (the default) or terse
+        :param string words: A 3 word address as a string
         :param string format: Return data format type; can be one of
-                              json (the default), geojson or xml
+                              json (the default), geojson
 
         :rtype: dict
 
         References
         ----------
-        API Reference: https://docs.what3words.com/api/v2/#forward
+        API Reference: https://docs.what3words.com/api/v3/#convert-to-coordinates
         """
 
         params = {
-            'addr': addr,
-            'display': display,
+            'words': words,
             'format': format,
-            'lang': lang or self.lang,
         }
 
-        return self._request('/forward', params)
+        return self._request('/convert-to-coordinates', params)
 
-    def reverse(self, lat, lng, display='full', format='json', lang=None):
+    def convert_to_3wa(self, coordinates, format='json', language=None):
         """
         Take latitude and longitude coordinates and turn them into
         a 3 word address.
 
         Params
         ------
-        :param float lat: latitude coordinate
+        :param Coordinates coordinates: the coordinates of the location to convert to 3 word address
         :param float lng: longitude coordinate
-        :param string display: return the lat and lng coordinates of the
-                             south-west and north-east corners of the
-                             what3words grid square.
         :param string format: Return data format type; can be one of
-                              json (the default), geojson or xml
-        :param string lang: A supported 3 word address language as an
-                            ISO 639-1 2 letter code. Defaults to self.lang
+                              json (the default), geojson
+        :param string language: A supported 3 word address language as an
+                            ISO 639-1 2 letter code. Defaults to self.language
 
         :rtype: dict
 
         References
         ----------
-        API Reference: https://docs.what3words.com/api/v2/#reverse
+        API Reference: https://docs.what3words.com/api/v3/#convert-to-3wa
         """
 
         params = {
-            'coords': '{0},{1}'.format(lat, lng),
-            'display': display,
+            'coordinates': '{0},{1}'.format(coordinates.lat, coordinates.lng),
             'format': format,
-            'lang': lang or self.lang,
+            'language': language or self.language,
         }
-        return self._request('/reverse', params)
+        return self._request('/convert-to-3wa', params)
 
-    def autosuggest(self, suggest, focus=None, clip=None, display='full',
-                    format='json', lang=None):
-        """
-        Returns a list of 3 word addresses based on user input and other
-        parameters.
-
-        Params
-        ------
-        :param string suggest: The full or partial 3 word address to obtain
-                               suggestions for. At minimum this must be the
-                               first two complete words plus at least one
-                               character from the third word
-        :param string focus: A location, specified as a latitude,longitude used
-                             to refine the results. If specified, the results
-                             will be weighted to give preference to those near
-                             the specified location in addition to considering
-                             similarity to the suggest string. If omitted the
-                             default behaviour is to weight results for
-                             similarity to the suggest string only.
-        :param string clip: Restricts results to those within a geographical
-                            area. If omitted defaults to clip=none
-        :param string format: Return data format type; can be one of
-                              json (the default), geojson or xml
-        :param string lang: A supported 3 word address language as an
-                            ISO 639-1 2 letter code. Defaults to self.lang
-
-        :rtype: dict
-
-        References
-        ----------
-        API Reference: https://docs.what3words.com/api/v2/#autosuggest
-        """
-
-        params = {
-            'addr': suggest,
-            'display': display,
-            'format': format,
-            'lang': lang or self.lang,
-        }
-        if focus:
-            params.update({
-                'focus': focus
-            })
-        if clip:
-            params.update({
-                'clip': clip
-            })
-
-        return self._request('/autosuggest', params)
-
-    def autosuggest_ml(self, suggest, focus=None, clip=None, display='full',
-                       format='json', lang=None):
-        """
-        Returns a list of 3 word addresses based on user input and other
-        parameters.
-
-        Params
-        ------
-        :param string suggest: The full or partial 3 word address to obtain
-                               suggestions for. At minimum this must be the
-                               first two complete words plus at least one
-                               character from the third word
-        :param string focus: A location, specified as a latitude,longitude used
-                             to refine the results. If specified, the results
-                             will be weighted to give preference to those near
-                             the specified location in addition to considering
-                             similarity to the suggest string. If omitted the
-                             default behaviour is to weight results for
-                             similarity to the suggest string only.
-        :param string clip: Restricts results to those within a geographical
-                            area. If omitted defaults to clip=none
-        :param string format: Return data format type; can be one of
-                              json (the default), geojson or xml
-        :param string lang: A supported 3 word address language as an
-                            ISO 639-1 2 letter code. Defaults to self.lang
-
-        :rtype: dict
-
-        References
-        ----------
-        API Reference: https://docs.what3words.com/api/v2/#autosuggest
-        """
-
-        params = {
-            'addr': suggest,
-            'display': display,
-            'format': format,
-            'lang': lang or self.lang,
-        }
-        if focus:
-            params.update({
-                'focus': focus
-            })
-        if clip:
-            params.update({
-                'clip': clip
-            })
-
-        return self._request('/autosuggest-ml', params)
-
-    def standardblend(self, suggest, focus=None, display='full',
-                      format='json', lang=None):
-        """
-        Returns a blend of the three most relevant 3 word address candidates
-        for a given location, based on a full or partial 3 word address.
-
-        Params
-        ------
-        :param string suggest: The full or partial 3 word address to obtain
-                               suggestions for. At minimum this must be the
-                               first two complete words plus at least one
-                               character from the third word
-        :param string focus: A location, specified as a latitude,longitude used
-                             to refine the results. If specified, the results
-                             will be weighted to give preference to those near
-                             the specified location in addition to considering
-                             similarity to the suggest string. If omitted the
-                             default behaviour is to weight results for
-                             similarity to the suggest string only.
-        :param string format: Return data format type; can be one of
-                              json (the default), geojson or xml
-        :param string lang: A supported 3 word address language as an
-                            ISO 639-1 2 letter code. Defaults to self.lang
-
-        :rtype: dict
-
-        References
-        ----------
-        API Reference: https://docs.what3words.com/api/v2/#standardblend
-        """
-
-        params = {
-            'addr': suggest,
-            'display': display,
-            'format': format,
-            'lang': lang or self.lang,
-        }
-        if focus:
-            params.update({
-                'focus': focus
-            })
-
-        return self._request('/standardblend', params)
-
-    def standardblend_ml(self, suggest, focus=None, display='full',
-                         format='json', lang=None):
-        """
-        Returns a blend of the three most relevant 3 word address candidates
-        for a given location, based on a full or partial 3 word address.
-
-        Params
-        ------
-        :param string suggest: The full or partial 3 word address to obtain
-                               suggestions for. At minimum this must be the
-                               first two complete words plus at least one
-                               character from the third word
-        :param string focus: A location, specified as a latitude,longitude used
-                             to refine the results. If specified, the results
-                             will be weighted to give preference to those near
-                             the specified location in addition to considering
-                             similarity to the suggest string. If omitted the
-                             default behaviour is to weight results for
-                             similarity to the suggest string only.
-        :param string format: Return data format type; can be one of
-                              json (the default), geojson or xml
-        :param string lang: A supported 3 word address language as an
-                            ISO 639-1 2 letter code. Defaults to self.lang
-
-        :rtype: dict
-
-        References
-        ----------
-        API Reference: https://docs.what3words.com/api/v2/#standardblend
-        """
-
-        params = {
-            'addr': suggest,
-            'display': display,
-            'format': format,
-            'lang': lang or self.lang,
-        }
-        if focus:
-            params.update({
-                'focus': focus
-            })
-
-        return self._request('/standardblend-ml', params)
-
-    def grid(self, bbox, display='full', format='json'):
+    def grid_section(self, bounding_box, format='json'):
         """
         Take latitude and longitude coordinates and turn them into
         a 3 word address.
 
         Params
         ------
-        :param string bbox: Bounding box, specified by the northeast and
+        :param BoundingBox bbox: Bounding box, specified by the northeast and
                             southwest corner coordinates, for which the grid
                             should be returned.
-        :param string display: return the lat and lng coordinates of the
-                             south-west and north-east corners of the
-                             what3words grid square.
         :param string format: Return data format type; can be one of
-                              json (the default), geojson or xml
+                              json (the default), geojson
         :rtype: dict
 
         References
         ----------
-        API Reference: https://docs.what3words.com/api/v2/#grid
+        API Reference: https://docs.what3words.com/api/v3/#grid-section
         """
 
         params = {
-            'bbox': bbox,
-            'display': display,
+            'bounding-box': '{0},{1},{2},{3}'.format(bounding_box.sw.lat, bounding_box.sw.lng, bounding_box.ne.lat, bounding_box.ne.lng),
             'format': format
         }
-        return self._request('/grid', params)
+        return self._request('/grid-section', params)
 
-    def languages(self):
+    def available_languages(self):
         """
         Retrieve a list of available 3 word languages.
 
@@ -314,10 +112,112 @@ class Geocoder(object):
 
         References
         ----------
-        API Reference: https://docs.what3words.com/api/v2/#lang
+        API Reference: https://docs.what3words.com/api/v3/#available-languages
         """
 
-        return self._request('/languages')
+        return self._request('/available-languages')
+
+    def autosuggest(self, 
+        input, 
+        n_results=None, 
+        focus=None, 
+        n_focus_results=None,
+        clip_to_country=None,
+        clip_to_bounding_box=None,
+        clip_to_circle=None,
+        clip_to_polygon=None,
+        input_type=None,
+        language=None):
+        """
+        Returns a list of 3 word addresses based on user input and other
+        parameters.
+
+        Params
+        ------
+        :param string input: The full or partial 3 word address to obtain
+                            suggestions for. At minimum this must be the
+                            first two complete words plus at least one
+                            character from the third word
+        :param int n_results: The number of AutoSuggest results to return. A maximum of 100 
+                            results can be specified, if a number greater than this is 
+                            requested, this will be truncated to the maximum. The default is 3
+        :param Coordinates focus: A location, specified as a latitude,longitude used
+                            to refine the results. If specified, the results
+                            will be weighted to give preference to those near
+                            the specified location in addition to considering
+                            similarity to the suggest string. If omitted the
+                            default behaviour is to weight results for
+                            similarity to the suggest string only.
+        :param int n_focus_results: Specifies the number of results (must be <= n_results) 
+                            within the results set which will have a focus. Defaults to 
+                            n_results. This allows you to run autosuggest with a mix of 
+                            focussed and unfocussed results, to give you a "blend" of the two.
+        :param string clip_to_country: Restricts autosuggest to only return results inside the 
+                            countries specified by comma-separated list of uppercase ISO 3166-1 
+                            alpha-2 country codes (for example, to restrict to Belgium and the 
+                            UK, use clip_to_country="GB,BE")
+        :param BoundingBox clip_to_bounding_box: Restrict autosuggest results to a bounding 
+                            box, specified by coordinates.
+        :param Circle clip_to_circle: Restrict autosuggest results to a circle, specified by 
+                            Coordinates representing the center of the circle, and a distance in 
+                            kilometres which represents the radius. For convenience, longitude 
+                            is allowed to wrap around 180 degrees. For example 181 is equivalent 
+                            to -179.
+        :param Coordinates[] clip_to_polygon: Restrict autosuggest results to a polygon, 
+                            specified by a list of Coordinates. The polygon 
+                            should be closed, i.e. the first element should be repeated as the 
+                            last element; also the list should contain at least 4 entries. 
+                            The API is currently limited to accepting up to 25 pairs.
+        :param string input_type: For power users, used to specify voice input mode. Can be 
+                            text (default), vocon-hybrid or nmdp-asr.
+        :param string language: A supported 3 word address language as an
+                            ISO 639-1 2 letter code. Defaults to self.language
+
+        :rtype: dict
+
+        References
+        ----------
+        API Reference: https://docs.what3words.com/api/v2/#autosuggest
+        """
+
+        params = {
+            'input': input,
+            'language': language or self.language,
+        }
+        if n_results:
+            params.update({
+                'n-results': '{0}'.format(n_results)
+            })
+        if focus:
+            params.update({
+                'focus': '{0},{1}'.format(focus.lat, focus.lng)
+            })
+        if n_focus_results:
+            params.update({
+                'n-focus-results': '{0}'.format(n_focus_results)
+            })
+        if clip_to_country:
+            params.update({
+                'clip-to-country': '{0}'.format(clip_to_country)
+            })
+        if clip_to_bounding_box:
+            params.update({
+                'clip-to-bounding-box': '{0},{1},{2},{3}'.format(clip_to_bounding_box.sw.lat, clip_to_bounding_box.sw.lng, clip_to_bounding_box.ne.lat, clip_to_bounding_box.ne.lng)
+            })
+        if clip_to_circle:
+            params.update({
+                'clip-to-circle': '{0},{1},{2}'.format(clip_to_circle.center.lat, clip_to_circle.center.lng, clip_to_circle.radius)
+            })
+        if clip_to_polygon:
+            params.update({
+                'clip-to-polygon': '{0}'.format(', '.join("{},{}".format(coord.lat, coord.lng) for coord in clip_to_polygon))
+            })
+        if input_type:
+            params.update({
+                'input-type': '{0}'.format(','.join(input_type))
+            })
+
+        return self._request('/autosuggest', params)
 
     def defaultLanguage(self, lang=None):
         """
@@ -368,3 +268,81 @@ class Geocoder(object):
         r = requests.get(url, params=params)
         response = r.text
         return json.loads(response)
+
+class Coordinates(object):
+    """
+    A Coordinate represents (latitude, longitude) coordinates encoded according to the World Geodetic System (WGS84).
+    ==========
+    """
+
+    def __init__(self,lat,lng):
+        """
+        Constructor
+        Params
+        ------
+        :param lat: the latitude
+        :param lng: the longitude
+        """
+        self.lat = lat
+        self.lng = lng
+
+    def __eq__(self, other):
+        return self.lng == other.lng and self.lat == other.lat
+
+    def __str__(self):
+        return '<{0}, {1}>'.format(self.lat, self.lng)
+    
+    def __repr__(self):
+        return 'Coordinate({0}, {1})'.format(self.lat, self.lng)
+
+class BoundingBox(object):
+    """
+    A BoundingBox represents which which represents a range of latitudes and longitudes.
+    ==========
+    """
+
+    def __init__(self,sw,ne):
+        """
+        Constructor
+        Params
+        ------
+        :param sw: the coordinates of the southwest corner
+        :param ne: the coordinates of the northeast corner
+        """
+        self.sw = sw
+        self.ne = ne
+
+    def __eq__(self, other):
+        return self.sw == other.sw and self.ne == other.ne
+        
+    def __str__(self):
+        return '<{0}, {1}>'.format(self.sw, self.ne)
+    
+    def __repr__(self):
+        return 'BoundingBox({0}, {1})'.format(repr(self.sw), repr(self.ne))
+
+class Circle(object):
+    """
+    A Circle represented by center Coordinates, and a radius in kilometres
+    ==========
+    """
+
+    def __init__(self,center,radius):
+        """
+        Constructor
+        Params
+        ------
+        :param sw: the coordinates of the southwest corner
+        :param ne: the coordinates of the northeast corner
+        """
+        self.center = center
+        self.radius = radius
+
+    def __eq__(self, other):
+        return self.center == other.center and self.radius == other.radius
+        
+    def __str__(self):
+        return '<{0}, {1}>'.format(self.center, self.radius)
+    
+    def __repr__(self):
+        return 'BoundingBox({0}, {1})'.format(repr(self.center), repr(self.radius))

@@ -6,6 +6,7 @@ Unit tests for what3words API wrapper lib
 
 import what3words
 import json
+import sys
 from os import environ
 
 api_key = environ['W3W_API_KEY']
@@ -15,36 +16,35 @@ lng = -0.125499
 english = {'code': 'en', 'name': 'English', 'native_name': 'English'}
 suggest = 'indx.home.rqft'
 
-
 def testInvalidKey():
     badkey = 'BADKEY'
     geocoder = what3words.Geocoder(badkey)
-    result = geocoder.forward(addr)
-    assert result['code'] == 2
-    assert result['message'] == 'Authentication failed; invalid API key'
+    result = geocoder.convert_to_coordinates(addr)
+    assert result['error']['code'] == 'InvalidKey'
+    assert result['error']['message'] == 'Authentication failed; invalid API key'
 
 
-def testForwardGeocode():
+def testConvertToCoordinates():
     geocoder = what3words.Geocoder(api_key)
-    result = geocoder.forward(addr)
+    result = geocoder.convert_to_coordinates(addr)
     assert result['language'] == 'en'
     assert result['words'] == 'daring.lion.race'
-    assert result['geometry']['lat'] == lat
-    assert result['geometry']['lng'] == lng
+    assert result['coordinates']['lat'] == lat
+    assert result['coordinates']['lng'] == lng
 
 
-def testReverseGeocode():
+def testConvertTo3wa():
     geocoder = what3words.Geocoder(api_key)
-    result = geocoder.reverse(lat, lng)
+    result = geocoder.convert_to_3wa(what3words.Coordinates(lat, lng))
     assert result['language'] == 'en'
     assert result['words'] == 'daring.lion.race'
-    assert result['geometry']['lat'] == lat
-    assert result['geometry']['lng'] == lng
+    assert result['coordinates']['lat'] == lat
+    assert result['coordinates']['lng'] == lng
 
 
 def testLanguages():
     geocoder = what3words.Geocoder(api_key)
-    result = geocoder.languages()
+    result = geocoder.available_languages()
     assert result['languages'] is not None
     if english in result['languages']:
         assert True
@@ -59,30 +59,13 @@ def testAutoSuggest():
     assert result['suggestions'] is not None
 
 
-def testAutoSuggestML():
-    geocoder = what3words.Geocoder(api_key)
-    result = geocoder.autosuggest_ml(suggest)
-
-    assert result['suggestions'] is not None
-
-
-def testStandardBlend():
-    geocoder = what3words.Geocoder(api_key)
-    result = geocoder.standardblend(suggest)
-
-    assert result['blends'] is not None
-
-
-def testStandardBlendML():
-    geocoder = what3words.Geocoder(api_key)
-    result = geocoder.standardblend_ml(suggest)
-
-    assert result['blends'] is not None
-
-
 def testGrid():
     geocoder = what3words.Geocoder(api_key)
-    result = geocoder.grid("52.208867,0.117540,52.207988,0.116126")
+    sw = what3words.Coordinates(52.208867,0.117540)
+    ne = what3words.Coordinates(52.207988,0.116126)
+    bb = what3words.BoundingBox(sw, ne)
+
+    result = geocoder.grid_section(bb)
 
     assert result['lines'] is not None
 

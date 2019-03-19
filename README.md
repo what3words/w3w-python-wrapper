@@ -1,16 +1,21 @@
 # <img src="https://what3words.com/assets/images/w3w_square_red.png" width="64" height="64" alt="what3words">&nbsp;w3w-python-wrapper [![Build Status](https://travis-ci.org/what3words/w3w-python-wrapper.svg?branch=master)](https://travis-ci.org/what3words/w3w-python-wrapper)
 
-A Python library to use the [what3words REST API](https://docs.what3words.com/api/v2/).
+A Python library to use the [what3words REST API](https://docs.what3words.com/api/v3/).
 
 Tested with Python 2.7, 3.4, 3.5, 3.6 (check travis-ci.org [build](https://travis-ci.org/what3words/w3w-python-wrapper/builds))
 
 # Overview
 
-The what3words Python library gives you programmatic access to convert a 3 word address to coordinates (_forward geocoding_), to convert coordinates to a 3 word address (_reverse geocoding_), and to determine the currently support 3 word address languages.
+The what3words Python library gives you programmatic access to 
+* convert a 3 word address to coordinates 
+* convert coordinates to a 3 word address
+* autosuggest functionality which takes a slightly incorrect 3 word address, and suggests a list of valid 3 word addresses
+* obtain a section of the 3m x 3m what3words grid for a bounding box.
+* determine the currently support 3 word address languages.
 
 ## Authentication
 
-To use this library you’ll need a what3words API key, which can be signed up for [here](https://map.what3words.com/register?dev=true).
+To use this library you’ll need a what3words API key, which can be signed up for [here](https://accounts.what3words.com/).
 
 # Installation
 
@@ -32,21 +37,18 @@ $ cd w3w-python-wrapper
 $ python setup.py install
 ```
 
-## Forward geocoding
-Forward geocodes a 3 word address to a position, expressed as coordinates of latitude and longitude.
+## Convert To Coordinates
 
 This function takes the words parameter as a string of 3 words `'table.book.chair'`
 
-The returned payload from the `forwardGeocode` method is described in the [what3words REST API documentation](https://docs.what3words.com/api/v2/#forward-result).
+The returned payload from the `convert-to-coordinates` method is described in the [what3words REST API documentation](https://docs.what3words.com/api/v3/#convert-to-coordinates).
 
-## Reverse geocoding
-
-Reverse geocodes coordinates, expressed as latitude and longitude to a 3 word address.
+## Convert To 3 Word Address
 
 This function takes the latitude and longitude:
 - 2 parameters:  `lat=0.1234`, `lng=1.5678`
 
-The returned payload from the `reverseGeocode` method is described in the [what3words REST API documentation](https://docs.what3words.com/api/v2/#reverse-result).
+The returned payload from the `convert-to-3wa` method is described in the [what3words REST API documentation](https://docs.what3words.com/api/v3/#convert-to-3wa).
 
 
 ## AutoSuggest
@@ -59,14 +61,7 @@ This method provides corrections for the following types of input error:
 * misremembered words (e.g. singular vs. plural)
 * words in the wrong order
 
-The `autoSuggest` method determines possible corrections to the supplied 3 word address string based on the probability of the input errors listed above and returns a ranked list of suggestions. This method can also take into consideration the geographic proximity of possible corrections to a given location to further improve the suggestions returned.
-
-### Single and Multilingual Variants
-AutoSuggest is provided via 2 variant resources; single language and multilingual.
-
-The single language autosuggest resource requires a language to be specified. The input full or partial 3 word address will be interpreted as being in the specified language and all suggestions will be in this language. We recommend that you set this according to the language of your user interface, or the browser/device language of your user. If your software or app displays 3 word addresses to users (in addition to accepting 3 words as a search/input) then we recommend you set the language parameter for this resource to the same language that 3 word addresses are displayed to your users.
-
-The multilingual `autosuggest-ml` resource can accept an optional language. If specified, this will ensure that the `autosuggest-ml` resource will look for suggestions in this language, in addition to any other languages that yield relevant suggestions.
+The `autosuggest` method determines possible corrections to the supplied 3 word address string based on the probability of the input errors listed above and returns a ranked list of suggestions. This method can also take into consideration the geographic proximity of possible corrections to a given location to further improve the suggestions returned.
 
 ### Input 3 word address
 
@@ -78,31 +73,19 @@ We provide various `clip` policies to allow you to specify a geographic area tha
 
 In summary, the `clip` policy is used to optionally restrict the list of candidate AutoSuggest results, after which, if focus has been supplied, this will be used to rank the results in order of relevancy to the focus.
 
-http://docs.what3words.local/api/v2/#autosuggest-clip
+https://docs.what3words.com/api/v3/#autosuggest
 
-The returned payload from the `autoSuggest` method is described in the [what3words REST API documentation](https://docs.what3words.com/api/v2/#autosuggest-result).
+The returned payload from the `autosuggest` method is described in the [what3words REST API documentation](https://docs.what3words.com/api/v3/#autosuggest).
 
-## Standardblend
-Returns a blend of the three most relevant 3 word address candidates for a given location, based on a full or partial 3 word address.
+## Grid Section
 
-The specified 3 word address may either be a full 3 word address or a partial 3 word address containing the first 2 words in full and at least 1 character of the 3rd word. The standardblend resource provides the search logic that powers the search box on map.what3words.com and in the what3words mobile apps.
+Returns a section of the 3m x 3m what3words grid for a bounding box.
 
-*Single and Multilingual Variants*
-
-AutoSuggest is provided via 2 variant resources; single language and multilingual.
-
-The single language `standardblend` method requires a language to be specified.
-
-The multilingual `standardblend_ml` method requires a language to be specified. This will ensure that the standardblend-ml resource will look for suggestions in this language, in addition to any other languages that yield relevant suggestions.
-
-see https://docs.what3words.com/api/v2/#standardblend for detailed information
-
-
-## Get Languages
+## Available Languages
 
 Retrieves a list of the currently loaded and available 3 word address languages.
 
-The returned payload from the `languages` method is described in the [what3words REST API documentation](https://docs.what3words.com/api/v2/#lang-result).
+The returned payload from the `available-languages` method is described in the [what3words REST API documentation](https://docs.what3words.com/api/v3/#available-languages).
 
 ## Code examples
 
@@ -112,23 +95,23 @@ For safe storage of your API key on your computer, you can define that API key u
 $ export W3W_API_KEY=<Secret API Key>
 ```
 
-### Forward Geocode
+### Convert to coordinates
 ```python
 >>> import what3words
 >>> from os import environ
 >>> api_key = environ['W3W_API_KEY']
 >>> w3w = what3words.Geocoder(api_key)
->>> res = w3w.forward(addr='prom.cape.pump')
+>>> res = w3w.convert_to_coordinates(addr='prom.cape.pump')
 >>> print(res)
 ```
 
-### Reverse Geocode
+### Convert to 3 word address
 ```python
 >>> import what3words
 >>> from os import environ
 >>> api_key = environ['W3W_API_KEY']
 >>> w3w = what3words.Geocoder(api_key)
->>> res = w3w.reverse(lat=51.484463, lng=-0.195405)
+>>> res = w3w.convert_to_3wa(what3words.Coordinates(51.484463,-0.195405))
 >>> print(res)
 ```
 
@@ -148,6 +131,7 @@ Anyone and everyone is welcome to contribute.
 
 # Revision History
 
+* `v3.0.0`  04/02/19 - Updated wrapper to use what3words API v3
 * `v2.2.1`  08/09/17 - Python 3 setup install fixed thanks to [@joedborg](https://github.com/joedborg)
 * `v2.2.0`  07/09/17 - Python 3 support, thanks to [@joedborg](https://github.com/joedborg)
 * `v2.1.1`  07/09/17 - update README : this library is compatible with Python 2
