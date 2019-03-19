@@ -13,7 +13,7 @@ api_key = environ['W3W_API_KEY']
 addr = 'daring.lion.race'
 lat = 51.508341
 lng = -0.125499
-english = {'code': 'en', 'name': 'English', 'native_name': 'English'}
+english = {'code': 'en', 'name': 'English', 'nativeName': 'English'}
 suggest = 'indx.home.rqft'
 
 def testInvalidKey():
