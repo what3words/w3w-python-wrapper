@@ -97,22 +97,22 @@ $ export W3W_API_KEY=<Secret API Key>
 
 ### Convert to coordinates
 ```python
->>> import what3words
->>> from os import environ
->>> api_key = environ['W3W_API_KEY']
->>> w3w = what3words.Geocoder(api_key)
->>> res = w3w.convert_to_coordinates(addr='prom.cape.pump')
->>> print(res)
+import what3words
+from os import environ
+api_key = environ['W3W_API_KEY']
+w3w = what3words.Geocoder(api_key)
+res = w3w.convert_to_coordinates('prom.cape.pump')
+print(res)
 ```
 
 ### Convert to 3 word address
 ```python
->>> import what3words
->>> from os import environ
->>> api_key = environ['W3W_API_KEY']
->>> w3w = what3words.Geocoder(api_key)
->>> res = w3w.convert_to_3wa(what3words.Coordinates(51.484463,-0.195405))
->>> print(res)
+import what3words
+from os import environ
+api_key = environ['W3W_API_KEY']
+w3w = what3words.Geocoder(api_key)
+res = w3w.convert_to_3wa(what3words.Coordinates(51.484463,-0.195405))
+print(res)
 ```
 
 ## Issues
