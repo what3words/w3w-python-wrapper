@@ -2,9 +2,11 @@
 # coding: utf8
 
 import json
-
 import requests
+import platform
+import re
 
+from .version import __version__
 
 class Geocoder(object):
     """
@@ -265,7 +267,9 @@ class Geocoder(object):
             'key': self.api_key,
         })
         url = self.end_point+url_path
-        r = requests.get(url, params=params)
+
+        headers = {'user-agent': 'what3words-Python/{} (Python {}; {})'.format(__version__, platform.python_version(), platform.platform())}
+        r = requests.get(url, params=params, headers=headers)
         response = r.text
         return json.loads(response)
 
