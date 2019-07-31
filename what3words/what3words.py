@@ -268,7 +268,7 @@ class Geocoder(object):
         })
         url = self.end_point+url_path
 
-        headers = {'user-agent': 'what3words-Python/{} (Python {}; {})'.format(__version__, platform.python_version(), platform.platform())}
+        headers = {'X-W3W-Wrapper': 'what3words-Python/{} (Python {}; {})'.format(__version__, platform.python_version(), platform.platform())}
         r = requests.get(url, params=params, headers=headers)
         response = r.text
         return json.loads(response)
