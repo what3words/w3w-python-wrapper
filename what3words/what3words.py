@@ -129,7 +129,8 @@ class Geocoder(object):
         clip_to_circle=None,
         clip_to_polygon=None,
         input_type=None,
-        language=None):
+        language=None,
+        prefer_land=None):
         """
         Returns a list of 3 word addresses based on user input and other
         parameters.
@@ -171,9 +172,12 @@ class Geocoder(object):
                             last element; also the list should contain at least 4 entries. 
                             The API is currently limited to accepting up to 25 pairs.
         :param string input_type: For power users, used to specify voice input mode. Can be 
-                            text (default), vocon-hybrid or nmdp-asr.
+                            text (default), vocon-hybrid, nmdp-asr or generic-voice.
         :param string language: A supported 3 word address language as an
                             ISO 639-1 2 letter code. Defaults to self.language
+        :param string prefer_land: Makes autosuggest prefer results on land to those in the sea. 
+                            This setting is on by default. Use false to disable this setting and 
+                            receive more suggestions in the sea.
 
         :rtype: dict
 
@@ -217,6 +221,10 @@ class Geocoder(object):
         if input_type:
             params.update({
                 'input-type': '{0}'.format(','.join(input_type))
+            })
+        if prefer_land is not None:
+            params.update({
+                'prefer-land': '{0}'.format(prefer_land)
             })
 
         return self._request('/autosuggest', params)
