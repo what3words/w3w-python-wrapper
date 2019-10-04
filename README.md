@@ -131,6 +131,7 @@ Anyone and everyone is welcome to contribute.
 
 # Revision History
 
+* `v3.1.1`  04/10/19 - Fix bugs related to setting default language value, and autosuggest input-type
 * `v3.1.0`  29/08/19 - Support 'prefer-land' parameter for Autosuggest calls
 * `v3.0.2`  16/07/19 - Include User-Agent in API requests
 * `v3.0.0`  04/02/19 - Updated wrapper to use what3words API v3

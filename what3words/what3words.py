@@ -220,7 +220,7 @@ class Geocoder(object):
             })
         if input_type:
             params.update({
-                'input-type': '{0}'.format(','.join(input_type))
+                'input-type': '{0}'.format(input_type)
             })
         if prefer_land is not None:
             params.update({
@@ -240,8 +240,8 @@ class Geocoder(object):
         :retype: string
         """
         if(lang is not None):
-            self.lang = lang
-        return self.lang
+            self.language = lang
+        return self.language
 
     def defaultEndpoint(self, end_point=None):
         """
