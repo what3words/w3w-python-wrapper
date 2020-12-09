@@ -15,7 +15,7 @@ The what3words Python library gives you programmatic access to
 
 ## Authentication
 
-To use this library you’ll need a what3words API key, which can be signed up for [here](https://accounts.what3words.com/).
+To use this library you’ll need an API key, please visit [https://what3words.com/select-plan](https://what3words.com/select-plan) and sign up for an account.
 
 # Installation
 
