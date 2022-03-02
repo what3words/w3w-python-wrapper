@@ -282,18 +282,58 @@ class Geocoder(object):
         return json.loads(response)
 
     def isPossible3wa(self, text):
+        """
+        Determines of the string passed in is the form of a three word address.
+        This does not validate whther it is a real address as it returns True for x.x.x
+
+        Params
+        ------
+        :param string text: text to check
+
+        :rtype: bool
+        """
         regex_match = "^/*(?:[^0-9`~!@#$%^&*()+\-_=[{\]}\\|'<,.>?/\";:£§º©®\s]{1,}[.｡。･・︒។։။۔።।][^0-9`~!@#$%^&*()+\-_=[{\]}\\|'<,.>?/\";:£§º©®\s]{1,}[.｡。･・︒។։။۔።।][^0-9`~!@#$%^&*()+\-_=[{\]}\\|'<,.>?/\";:£§º©®\s]{1,}|'<,.>?/\";:£§º©®\s]+[.｡。･・︒។։။۔።।][^0-9`~!@#$%^&*()+\-_=[{\]}\\|'<,.>?/\";:£§º©®\s]+|[^0-9`~!@#$%^&*()+\-_=[{\]}\\|'<,.>?/\";:£§º©®\s]+([\u0020\u00A0][^0-9`~!@#$%^&*()+\-_=[{\]}\\|'<,.>?/\";:£§º©®\s]+){1,3}[.｡。･・︒។։။۔።।][^0-9`~!@#$%^&*()+\-_=[{\]}\\|'<,.>?/\";:£§º©®\s]+([\u0020\u00A0][^0-9`~!@#$%^&*()+\-_=[{\]}\\|'<,.>?/\";:£§º©®\s]+){1,3}[.｡。･・︒។։။۔።।][^0-9`~!@#$%^&*()+\-_=[{\]}\\|'<,.>?/\";:£§º©®\s]+([\u0020\u00A0][^0-9`~!@#$%^&*()+\-_=[{\]}\\|'<,.>?/\";:£§º©®\s]+){1,3})$"
         return not (None == re.match(regex_match, text))
 
     def findPossible3wa(self, text):
+        """
+        Searches the string passed in for all substrings in the form of a three word address.
+        This does not validate whther it is a real address as it will return x.x.x as a result
+
+        Params
+        ------
+        :param string text: text to check
+
+        :rtype: dict
+        """
         regex_search = "[^0-9`~!@#$%^&*()+\-_=[{\]}\\|'<,.>?/\";:£§º©®\s]{1,}[.｡。･・︒។։။۔።।][^0-9`~!@#$%^&*()+\-_=[{\]}\\|'<,.>?/\";:£§º©®\s]{1,}[.｡。･・︒។։။۔።।][^0-9`~!@#$%^&*()+\-_=[{\]}\\|'<,.>?/\";:£§º©®\s]{1,}"
         return re.findall(regex_search, text, flags=re.UNICODE)
 
     def didYouMean(self, text):
+        """
+        Determines of the string passed in is almost in the form of a three word address.
+        This will return True for values such as "filled-count-soap" and "filled count soap"
+
+        Params
+        ------
+        :param string text: text to check
+
+        :rtype: bool
+        """
         regex_match = "^/*[^0-9`~!@#$%^&*()+\-_=[{\]}\\|'<,.>?/\";:£§º©®\s]{1,}[.｡。･・︒។։။۔።। ,\\-_/+'&\\:;|　-]{1,2}[^0-9`~!@#$%^&*()+\-_=[{\]}\\|'<,.>?/\";:£§º©®\s]{1,}[.｡。･・︒។։။۔።। ,\\-_/+'&\\:;|　-]{1,2}[^0-9`~!@#$%^&*()+\-_=[{\]}\\|'<,.>?/\";:£§º©®\s]{1,}$"
         return not (None == re.match(regex_match, text))
 
     def isValid3wa(self, text):
+        """
+        Determines of the string passed in is a real three word address.  It calls the API
+        to verify it refers to an actual plac eon earth.
+
+        Params
+        ------
+        :param string text: text to check
+
+        :rtype: bool
+        """
         if self.isPossible3wa(text):
             result = self.autosuggest(text, n_results=1)
             if len(result["suggestions"]) > 0:
