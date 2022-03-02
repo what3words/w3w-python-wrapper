@@ -293,6 +293,14 @@ class Geocoder(object):
         regex_match = "^/*[^0-9`~!@#$%^&*()+\-_=[{\]}\\|'<,.>?/\";:£§º©®\s]{1,}[.｡。･・︒។։။۔።। ,\\-_/+'&\\:;|　-]{1,2}[^0-9`~!@#$%^&*()+\-_=[{\]}\\|'<,.>?/\";:£§º©®\s]{1,}[.｡。･・︒។։။۔።। ,\\-_/+'&\\:;|　-]{1,2}[^0-9`~!@#$%^&*()+\-_=[{\]}\\|'<,.>?/\";:£§º©®\s]{1,}$"
         return not (None == re.match(regex_match, text))
 
+    def isValid3wa(self, text):
+        if self.isPossible3wa(text):
+            result = self.autosuggest(text, n_results=1)
+            if len(result["suggestions"]) > 0:
+                if result["suggestions"][0]["words"] == text:
+                    return True
+        return False
+
 
 class Coordinates(object):
     """
