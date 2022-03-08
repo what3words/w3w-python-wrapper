@@ -161,6 +161,7 @@ Anyone and everyone is welcome to contribute.
 
 # Revision History
 
+* `v3.2.0`  08/03/22 - Added regex functions
 * `v3.1.1`  04/10/19 - Fix bugs related to setting default language value, and autosuggest input-type
 * `v3.1.0`  29/08/19 - Support 'prefer-land' parameter for Autosuggest calls
 * `v3.0.2`  16/07/19 - Include User-Agent in API requests
