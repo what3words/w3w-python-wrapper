@@ -87,6 +87,36 @@ Retrieves a list of the currently loaded and available 3 word address languages.
 
 The returned payload from the `available-languages` method is described in the [what3words REST API documentation](https://docs.what3words.com/api/v3/#available-languages).
 
+
+## isPossible3wa
+This method takes a string as a parameter and returns whether the string is in the format of a 3WA (eg “filled.count.soap”). Return type is boolean. NOTE: Does not check if it is an actual existing 3WA. 
+
+```
+isPossible3wa(“filled.count.soap”) returns True
+isPossible3wa(“not a 3wa”) returns False
+isPossible3wa(“not.3wa address”) returns False
+```
+
+## findPossible3wa
+
+This method takes a string as a parameter and searches the string for any possible instances of a 3WA - e.g. "leave in my porch at word.word.word." Likely to be the main method that is called on the delivery notes. Returns an array of matched items. Returns an empty array if no matches are found. NOTE: Does not check if it is an actual existing 3WA.
+
+```
+findPossible3wa(“Please leave by my porch at filled.count.soap”) will return [‘filled.count.soap’]
+findPossible3wa(“Please leave by my porch at filled.count.soap or deed.tulip.judge”) will return [‘filled.count.soap’, ‘deed.tulip.judge’]
+findPossible3wa(“Please leave by my porch at”) will return []
+```
+
+## isValid3wa
+
+This method takes a string as a parameter and first passes it through the W3W regex filter (akin to calling isPossible3wa() on the string) and then calls the W3W api to verify it is a real 3WA.
+
+```
+isValid3wa(“filled.count.soap”) returns True
+isValid3wa(“filled.count.”) returns False
+isValid3wa(“python.is.cool”) returns False
+```
+
 ## Code examples
 
 ### W3W-API-KEY
