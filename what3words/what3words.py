@@ -300,9 +300,9 @@ class Geocoder(object):
                 "clip-to-circle"
             ] = f"{clip_to_circle.center.lat},{clip_to_circle.center.lng},{clip_to_circle.radius}"
         if clip_to_polygon:
-            params[
-                "clip-to-polygon"
-            ] = f"{', '.join(f'{coord.lat},{coord.lng}' for coord in clip_to_polygon)}"
+            params["clip-to-polygon"] = ", ".join(
+                f"{coord.lat},{coord.lng}" for coord in clip_to_polygon
+            )
         if input_type:
             params["input-type"] = f"{input_type}"
         if prefer_land:
