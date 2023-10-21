@@ -5,78 +5,56 @@ Unit tests for what3words API wrapper lib
 """
 
 import what3words
-import json
-import sys
 from os import environ
+from unittest import TestCase
 
-api_key = environ['W3W_API_KEY']
-addr = 'daring.lion.race'
-lat = 51.508341
-lng = -0.125499
-english = {'code': 'en', 'name': 'English', 'nativeName': 'English'}
-suggest = 'indx.home.rqft'
-
-def testInvalidKey():
-    badkey = 'BADKEY'
-    geocoder = what3words.Geocoder(badkey)
-    result = geocoder.convert_to_coordinates(addr)
-    assert result['error']['code'] == 'InvalidKey'
-    assert result['error']['message'] == 'Authentication failed; invalid API key'
+API_KEY = environ["W3W_API_KEY"]
+ADDR = "daring.lion.race"
+LAT = 51.508341
+LNG = -0.125499
+ENGLISH_DICT = {"code": "en", "name": "English", "nativeName": "English"}
+SUGGEST = "indx.home.rqft"
+WHAT3WORDS_MAPPING = {ADDR: what3words.Coordinates(LAT, LNG)}
 
 
-def testConvertToCoordinates():
-    geocoder = what3words.Geocoder(api_key)
-    result = geocoder.convert_to_coordinates(addr)
-    assert result['language'] == 'en'
-    assert result['words'] == 'daring.lion.race'
-    assert result['coordinates']['lat'] == lat
-    assert result['coordinates']['lng'] == lng
+class TestCases(TestCase):
+    def setUp(self):
+        self.geocoder = what3words.Geocoder(API_KEY)
 
+    def test_invalid_key(self):
+        self.geocoder.api_key = "BADKEY"
+        result = self.geocoder.convert_to_coordinates(ADDR)
+        assert result["error"]["code"] == "InvalidKey"
+        assert result["error"]["message"] == "Authentication failed; invalid API key"
 
-def testConvertTo3wa():
-    geocoder = what3words.Geocoder(api_key)
-    result = geocoder.convert_to_3wa(what3words.Coordinates(lat, lng))
-    assert result['language'] == 'en'
-    assert result['words'] == 'daring.lion.race'
-    assert result['coordinates']['lat'] == lat
-    assert result['coordinates']['lng'] == lng
+    def test_convert_to_coordinates(self):
+        result = self.geocoder.convert_to_coordinates(ADDR)
+        assert result["language"] == "en"
+        assert result["words"] == ADDR
+        assert result["coordinates"]["lat"] == WHAT3WORDS_MAPPING[ADDR].lat
+        assert result["coordinates"]["lng"] == WHAT3WORDS_MAPPING[ADDR].lng
 
+    def test_convert_to_3wa(self):
+        result = self.geocoder.convert_to_3wa(WHAT3WORDS_MAPPING[ADDR])
+        assert result["language"] == "en"
+        assert result["words"] == ADDR
+        assert result["coordinates"]["lat"] == WHAT3WORDS_MAPPING[ADDR].lat
+        assert result["coordinates"]["lng"] == WHAT3WORDS_MAPPING[ADDR].lng
 
-def testLanguages():
-    geocoder = what3words.Geocoder(api_key)
-    result = geocoder.available_languages()
-    assert result['languages'] is not None
-    if english in result['languages']:
-        assert True
-    else:
-        assert False
+    def test_languages(self):
+        result = self.geocoder.available_languages()
+        assert result["languages"] is not None
+        assert ENGLISH_DICT in result["languages"]
 
+    def testAutoSuggest(self):
+        result = self.geocoder.autosuggest(SUGGEST)
+        assert result["suggestions"] is not None
 
-def testAutoSuggest():
-    geocoder = what3words.Geocoder(api_key)
-    result = geocoder.autosuggest(suggest)
+    def testGrid(self):
+        sw = what3words.Coordinates(52.208867, 0.117540)
+        ne = what3words.Coordinates(52.207988, 0.116126)
+        bb = what3words.BoundingBox(sw, ne)
 
-    assert result['suggestions'] is not None
+        result = self.geocoder.grid_section(bb)
 
-
-def testGrid():
-    geocoder = what3words.Geocoder(api_key)
-    sw = what3words.Coordinates(52.208867,0.117540)
-    ne = what3words.Coordinates(52.207988,0.116126)
-    bb = what3words.BoundingBox(sw, ne)
-
-    result = geocoder.grid_section(bb)
-
-    assert result['lines'] is not None
-
-
-if __name__ == '__main__':
-    testInvalidKey()
-    # testLanguages()
-    # testForwardGeocode()
-    # testReverseGeocode()
-    # testAutoSuggest()
-    # testStandardBlend()
-    # testAutoSuggestML()
-    # testStandardBlendML()
-    # testGrid()
+        assert result["lines"] is not None
