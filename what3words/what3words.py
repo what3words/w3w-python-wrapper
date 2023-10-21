@@ -166,7 +166,7 @@ class Geocoder(object):
         """
 
         params = {
-            "coordinates": "{0},{1}".format(coordinates.lat, coordinates.lng),
+            "coordinates": f"{coordinates.lat},{coordinates.lng}",
             "format": format,
             "language": language or self.language,
         }
@@ -192,12 +192,7 @@ class Geocoder(object):
         """
 
         params = {
-            "bounding-box": "{0},{1},{2},{3}".format(
-                bounding_box.sw.lat,
-                bounding_box.sw.lng,
-                bounding_box.ne.lat,
-                bounding_box.ne.lng,
-            ),
+            "bounding-box": f"{bounding_box.sw.lat},{bounding_box.sw.lng},{bounding_box.ne.lat},{bounding_box.ne.lng}",
             "format": format,
         }
         return self._request("/grid-section", params)
@@ -343,7 +338,11 @@ class Geocoder(object):
             self.end_point = end_point
         return self.end_point
 
-    def _request(self, url_path: str, params: dict | None = None) -> dict:
+    def _request(
+        self,
+        url_path: str,
+        params: dict | None = None,
+    ) -> dict:
         """
         Executes request
 
@@ -365,8 +364,6 @@ class Geocoder(object):
         }
         r = requests.get(url, params=params, headers=headers)
         return r.json()
-        response = r.text
-        return json.loads(response)
 
     def isPossible3wa(self, text: str) -> bool:
         """
