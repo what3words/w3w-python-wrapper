@@ -27,10 +27,15 @@ def testInvalidKey():
 def testConvertToCoordinates():
     geocoder = what3words.Geocoder(api_key)
     result = geocoder.convert_to_coordinates(addr)
-    assert result['language'] == 'en'
-    assert result['words'] == 'daring.lion.race'
-    assert result['coordinates']['lat'] == lat
-    assert result['coordinates']['lng'] == lng
+    print(result)
+    if 'error' in result:
+        assert result['error']['code'] == 'QuotaExceeded'
+        assert result['error']['message'] == 'Quota Exceeded. Please upgrade your usage plan, or contact support@what3words.com'
+    else:
+        assert result['language'] == 'en'
+        assert result['words'] == 'daring.lion.race'
+        assert result['coordinates']['lat'] == lat
+        assert result['coordinates']['lng'] == lng
 
 
 def testConvertTo3wa():
@@ -72,11 +77,8 @@ def testGrid():
 
 if __name__ == '__main__':
     testInvalidKey()
-    # testLanguages()
-    # testForwardGeocode()
-    # testReverseGeocode()
-    # testAutoSuggest()
-    # testStandardBlend()
-    # testAutoSuggestML()
-    # testStandardBlendML()
-    # testGrid()
+    testConvertTo3wa()
+    testConvertToCoordinates()
+    testLanguages()
+    testAutoSuggest()
+    testGrid()
