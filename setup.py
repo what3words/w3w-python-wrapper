@@ -6,15 +6,18 @@ try:
 except ImportError:
     from distutils.core import setup
 
-exec(open('what3words/version.py').read())
+# Read the version from version.py
+version = {}
+with open("version.py") as fp:
+    exec(fp.read(), version)
 
 with open('requirements.txt') as f:
     requires = f.read().splitlines()
 
 setup(
     name='what3words',
-    version=__version__,
-    author='What3Words',
+    version=version['__version__'],
+    author='what3words',
     author_email='support@what3words.com',
     url='https://github.com/what3words/w3w-python-wrapper',
     description='What3words API wrapper library',
