@@ -11,32 +11,32 @@ version = {}
 with open("version.py") as fp:
     exec(fp.read(), version)
 
-with open('requirements.txt') as f:
+with open("requirements.txt") as f:
     requires = f.read().splitlines()
 
 setup(
-    name='what3words',
-    version=version['__version__'],
-    author='what3words',
-    author_email='support@what3words.com',
-    url='https://github.com/what3words/w3w-python-wrapper',
-    description='What3words API wrapper library',
-    license='MIT',
-    packages=['what3words'],
-    package_dir={'what3words': 'what3words'},
+    name="what3words",
+    version=version["__version__"],
+    author="what3words",
+    author_email="support@what3words.com",
+    url="https://github.com/what3words/w3w-python-wrapper",
+    description="What3words API wrapper library",
+    license="MIT",
+    packages=["what3words"],
+    package_dir={"what3words": "what3words"},
     install_requires=requires,
-    keywords='what3words geocoder',
+    keywords="what3words geocoder",
     classifiers=[
-        'Development Status :: 5 - Production/Stable',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: MIT License',
-        'Operating System :: OS Independent',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: Implementation :: PyPy',
-        'Topic :: Software Development :: Libraries',
+        "Development Status :: 5 - Production/Stable",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3.4",
+        "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: Implementation :: PyPy",
+        "Topic :: Software Development :: Libraries",
     ],
 )

@@ -9,12 +9,18 @@ from typing import List, Optional, Dict, Union
 
 from .version import __version__
 
+
 class Geocoder:
     """
     What3Words v3 API wrapper
     """
 
-    def __init__(self, api_key: str, language: str = 'en', end_point: str = 'https://api.what3words.com/v3'):
+    def __init__(
+        self,
+        api_key: str,
+        language: str = "en",
+        end_point: str = "https://api.what3words.com/v3",
+    ):
         """
         Constructor
         :param api_key: A valid API key
@@ -25,17 +31,27 @@ class Geocoder:
         self.api_key = api_key
         self.language = language
 
-    def convert_to_coordinates(self, words: str, format: str = 'json') -> Dict:
+    def convert_to_coordinates(
+        self, words: str, format: str = "json", locale: Optional[str] = None
+    ) -> Dict:
         """
         Convert a 3 word address into coordinates.
         :param words: A 3 word address as a string
         :param format: Return data format type; can be 'json' (default) or 'geojson'
         :return: Response as a dictionary
         """
-        params = {'words': words, 'format': format}
-        return self._request('/convert-to-coordinates', params)
+        params = {"words": words, "format": format, "locale": locale}
+        if locale:
+            params["locale"] = locale
+        return self._request("/convert-to-coordinates", params)
 
-    def convert_to_3wa(self, coordinates: 'Coordinates', format: str = 'json', language: Optional[str] = None) -> Dict:
+    def convert_to_3wa(
+        self,
+        coordinates: "Coordinates",
+        format: str = "json",
+        language: Optional[str] = None,
+        locale: Optional[str] = None,
+    ) -> Dict:
         """
         Convert latitude and longitude coordinates into a 3 word address.
         :param coordinates: Coordinates object
@@ -44,13 +60,16 @@ class Geocoder:
         :return: Response as a dictionary
         """
         params = {
-            'coordinates': f'{coordinates.lat},{coordinates.lng}',
-            'format': format,
-            'language': language or self.language,
+            "coordinates": f"{coordinates.lat},{coordinates.lng}",
+            "format": format,
+            "language": language or self.language,
+            "locale": locale,
         }
-        return self._request('/convert-to-3wa', params)
+        if locale:
+            params["locale"] = locale
+        return self._request("/convert-to-3wa", params)
 
-    def grid_section(self, bounding_box: 'BoundingBox', format: str = 'json') -> Dict:
+    def grid_section(self, bounding_box: "BoundingBox", format: str = "json") -> Dict:
         """
         Retrieve a grid section for a bounding box.
         :param bounding_box: BoundingBox object
@@ -58,23 +77,32 @@ class Geocoder:
         :return: Response as a dictionary
         """
         params = {
-            'bounding-box': f'{bounding_box.sw.lat},{bounding_box.sw.lng},{bounding_box.ne.lat},{bounding_box.ne.lng}',
-            'format': format
+            "bounding-box": f"{bounding_box.sw.lat},{bounding_box.sw.lng},{bounding_box.ne.lat},{bounding_box.ne.lng}",
+            "format": format,
         }
-        return self._request('/grid-section', params)
+        return self._request("/grid-section", params)
 
     def available_languages(self) -> Dict:
         """
         Retrieve a list of available 3 word languages.
         :return: Response as a dictionary
         """
-        return self._request('/available-languages')
+        return self._request("/available-languages")
 
-    def autosuggest(self, input: str, n_results: Optional[int] = None, focus: Optional['Coordinates'] = None,
-                    n_focus_results: Optional[int] = None, clip_to_country: Optional[str] = None,
-                    clip_to_bounding_box: Optional['BoundingBox'] = None, clip_to_circle: Optional['Circle'] = None,
-                    clip_to_polygon: Optional[List['Coordinates']] = None, input_type: Optional[str] = None,
-                    language: Optional[str] = None, prefer_land: Optional[bool] = None) -> Dict:
+    def autosuggest(
+        self,
+        input: str,
+        n_results: Optional[int] = None,
+        focus: Optional["Coordinates"] = None,
+        n_focus_results: Optional[int] = None,
+        clip_to_country: Optional[str] = None,
+        clip_to_bounding_box: Optional["BoundingBox"] = None,
+        clip_to_circle: Optional["Circle"] = None,
+        clip_to_polygon: Optional[List["Coordinates"]] = None,
+        input_type: Optional[str] = None,
+        language: Optional[str] = None,
+        prefer_land: Optional[bool] = None,
+    ) -> Dict:
         """
         Returns a list of 3 word addresses based on user input and other parameters.
         :param input: The full or partial 3 word address to obtain suggestions for
@@ -90,27 +118,33 @@ class Geocoder:
         :param prefer_land: Makes autosuggest prefer results on land to those in the sea
         :return: Response as a dictionary
         """
-        params = {'input': input, 'language': language or self.language}
+        params = {"input": input, "language": language or self.language}
         if n_results:
-            params['n-results'] = str(n_results)
+            params["n-results"] = str(n_results)
         if focus:
-            params['focus'] = f'{focus.lat},{focus.lng}'
+            params["focus"] = f"{focus.lat},{focus.lng}"
         if n_focus_results:
-            params['n-focus-results'] = str(n_focus_results)
+            params["n-focus-results"] = str(n_focus_results)
         if clip_to_country:
-            params['clip-to-country'] = clip_to_country
+            params["clip-to-country"] = clip_to_country
         if clip_to_bounding_box:
-            params['clip-to-bounding-box'] = f'{clip_to_bounding_box.sw.lat},{clip_to_bounding_box.sw.lng},{clip_to_bounding_box.ne.lat},{clip_to_bounding_box.ne.lng}'
+            params["clip-to-bounding-box"] = (
+                f"{clip_to_bounding_box.sw.lat},{clip_to_bounding_box.sw.lng},{clip_to_bounding_box.ne.lat},{clip_to_bounding_box.ne.lng}"
+            )
         if clip_to_circle:
-            params['clip-to-circle'] = f'{clip_to_circle.center.lat},{clip_to_circle.center.lng},{clip_to_circle.radius}'
+            params["clip-to-circle"] = (
+                f"{clip_to_circle.center.lat},{clip_to_circle.center.lng},{clip_to_circle.radius}"
+            )
         if clip_to_polygon:
-            params['clip-to-polygon'] = ','.join(f'{coord.lat},{coord.lng}' for coord in clip_to_polygon)
+            params["clip-to-polygon"] = ",".join(
+                f"{coord.lat},{coord.lng}" for coord in clip_to_polygon
+            )
         if input_type:
-            params['input-type'] = input_type
+            params["input-type"] = input_type
         if prefer_land is not None:
-            params['prefer-land'] = str(prefer_land).lower()
+            params["prefer-land"] = str(prefer_land).lower()
 
-        return self._request('/autosuggest', params)
+        return self._request("/autosuggest", params)
 
     def default_language(self, lang: Optional[str] = None) -> str:
         """
@@ -142,9 +176,11 @@ class Geocoder:
         if params is None:
             params = {}
 
-        params['key'] = self.api_key
+        params["key"] = self.api_key
         url = self.end_point + url_path
-        headers = {'X-W3W-Wrapper': f'what3words-Python/{__version__} (Python {platform.python_version()}; {platform.platform()})'}
+        headers = {
+            "X-W3W-Wrapper": f"what3words-Python/{__version__} (Python {platform.python_version()}; {platform.platform()})"
+        }
         response = requests.get(url, params=params, headers=headers).text
         return json.loads(response)
 
@@ -202,14 +238,14 @@ class Coordinates:
         self.lat = lat
         self.lng = lng
 
-    def __eq__(self, other: 'Coordinates') -> bool:
+    def __eq__(self, other: "Coordinates") -> bool:
         return self.lng == other.lng and self.lat == other.lat
 
     def __str__(self) -> str:
-        return f'<{self.lat}, {self.lng}>'
+        return f"<{self.lat}, {self.lng}>"
 
     def __repr__(self) -> str:
-        return f'Coordinates({self.lat}, {self.lng})'
+        return f"Coordinates({self.lat}, {self.lng})"
 
 
 class BoundingBox:
@@ -226,14 +262,14 @@ class BoundingBox:
         self.sw = sw
         self.ne = ne
 
-    def __eq__(self, other: 'BoundingBox') -> bool:
+    def __eq__(self, other: "BoundingBox") -> bool:
         return self.sw == other.sw and self.ne == other.ne
 
     def __str__(self) -> str:
-        return f'<{self.sw}, {self.ne}>'
+        return f"<{self.sw}, {self.ne}>"
 
     def __repr__(self) -> str:
-        return f'BoundingBox({repr(self.sw)}, {repr(self.ne)})'
+        return f"BoundingBox({repr(self.sw)}, {repr(self.ne)})"
 
 
 class Circle:
@@ -250,11 +286,11 @@ class Circle:
         self.center = center
         self.radius = radius
 
-    def __eq__(self, other: 'Circle') -> bool:
+    def __eq__(self, other: "Circle") -> bool:
         return self.center == other.center and self.radius == other.radius
 
     def __str__(self) -> str:
-        return f'<{self.center}, {self.radius}>'
+        return f"<{self.center}, {self.radius}>"
 
     def __repr__(self) -> str:
-        return f'Circle({repr(self.center)}, {self.radius})'
+        return f"Circle({repr(self.center)}, {self.radius})"
