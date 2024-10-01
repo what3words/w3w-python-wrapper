@@ -1,4 +1,5 @@
 from codecs import open
+
 """
 This script sets up the what3words Python API wrapper library.
 
@@ -13,7 +14,6 @@ Attributes:
 Functions:
     setup(): Configures the package using setuptools.
 """
-import re
 
 try:
     from setuptools import setup
@@ -41,7 +41,7 @@ setup(
     author_email="support@what3words.com",
     url="https://github.com/what3words/w3w-python-wrapper",
     description="what3words Python API wrapper library",
-    long_description=long_description, 
+    long_description=long_description,
     long_description_content_type="text/markdown",
     license="MIT",
     packages=["what3words"],

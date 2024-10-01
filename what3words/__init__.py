@@ -1,10 +1,10 @@
 #!/usr/bin/python
 # coding: utf8
 
-from .what3words import Geocoder
-from .what3words import Circle
-from .what3words import Coordinates
-from .what3words import BoundingBox
+from .what3words import Geocoder  # noqa: F401
+from .what3words import Circle  # noqa: F401
+from .what3words import Coordinates  # noqa: F401
+from .what3words import BoundingBox  # noqa: F401
 
 from .version import __version__ as v
 

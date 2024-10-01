@@ -1,5 +1,4 @@
 import unittest
-import what3words
 import json
 from os import environ
 from what3words import Geocoder, Coordinates, BoundingBox

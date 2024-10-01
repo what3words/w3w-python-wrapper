@@ -5,7 +5,7 @@ import json
 import requests
 import platform
 import re
-from typing import List, Optional, Dict, Union
+from typing import List, Optional, Dict
 
 from .version import __version__
 
