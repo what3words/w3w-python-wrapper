@@ -5,417 +5,292 @@ import json
 import requests
 import platform
 import re
+from typing import List, Optional, Dict
 
 from .version import __version__
 
-class Geocoder(object):
+
+class Geocoder:
     """
     What3Words v3 API wrapper
-    ==========
     """
 
-    def __init__(self, api_key, language='en',
-                 end_point='https://api.what3words.com/v3'):
+    def __init__(
+        self,
+        api_key: str,
+        language: str = "en",
+        end_point: str = "https://api.what3words.com/v3",
+    ):
         """
         Constructor
-        Params
-        ------
         :param api_key: A valid API key
-        :param language: default langauge use with the Geocoder
-        :param end_point: what3words api end point
+        :param language: Default language used with the Geocoder
+        :param end_point: What3Words API endpoint
         """
-
         self.end_point = end_point
         self.api_key = api_key
         self.language = language
 
-    def convert_to_coordinates(self, words, format='json'):
+    def convert_to_coordinates(
+        self, words: str, format: str = "json", locale: Optional[str] = None
+    ) -> Dict:
         """
-        Take a 3 word address and turn it into a pair of coordinates.
-
-        Params
-        ------
-        :param string words: A 3 word address as a string
-        :param string format: Return data format type; can be one of
-                              json (the default), geojson
-
-        :rtype: dict
-
-        References
-        ----------
-        API Reference: https://docs.what3words.com/api/v3/#convert-to-coordinates
+        Convert a 3 word address into coordinates.
+        :param words: A 3 word address as a string
+        :param format: Return data format type; can be 'json' (default) or 'geojson'
+        :return: Response as a dictionary
         """
+        params = {"words": words, "format": format, "locale": locale}
+        if locale:
+            params["locale"] = locale
+        return self._request("/convert-to-coordinates", params)
 
+    def convert_to_3wa(
+        self,
+        coordinates: "Coordinates",
+        format: str = "json",
+        language: Optional[str] = None,
+        locale: Optional[str] = None,
+    ) -> Dict:
+        """
+        Convert latitude and longitude coordinates into a 3 word address.
+        :param coordinates: Coordinates object
+        :param format: Return data format type; can be 'json' (default) or 'geojson'
+        :param language: A supported 3 word address language as an ISO 639-1 2 letter code. Defaults to self.language
+        :return: Response as a dictionary
+        """
         params = {
-            'words': words,
-            'format': format,
+            "coordinates": f"{coordinates.lat},{coordinates.lng}",
+            "format": format,
+            "language": language or self.language,
+            "locale": locale,
         }
+        if locale:
+            params["locale"] = locale
+        return self._request("/convert-to-3wa", params)
 
-        return self._request('/convert-to-coordinates', params)
-
-    def convert_to_3wa(self, coordinates, format='json', language=None):
+    def grid_section(self, bounding_box: "BoundingBox", format: str = "json") -> Dict:
         """
-        Take latitude and longitude coordinates and turn them into
-        a 3 word address.
-
-        Params
-        ------
-        :param Coordinates coordinates: the coordinates of the location to convert to 3 word address
-        :param float lng: longitude coordinate
-        :param string format: Return data format type; can be one of
-                              json (the default), geojson
-        :param string language: A supported 3 word address language as an
-                            ISO 639-1 2 letter code. Defaults to self.language
-
-        :rtype: dict
-
-        References
-        ----------
-        API Reference: https://docs.what3words.com/api/v3/#convert-to-3wa
+        Retrieve a grid section for a bounding box.
+        :param bounding_box: BoundingBox object
+        :param format: Return data format type; can be 'json' (default) or 'geojson'
+        :return: Response as a dictionary
         """
-
         params = {
-            'coordinates': '{0},{1}'.format(coordinates.lat, coordinates.lng),
-            'format': format,
-            'language': language or self.language,
+            "bounding-box": f"{bounding_box.sw.lat},{bounding_box.sw.lng},{bounding_box.ne.lat},{bounding_box.ne.lng}",
+            "format": format,
         }
-        return self._request('/convert-to-3wa', params)
+        return self._request("/grid-section", params)
 
-    def grid_section(self, bounding_box, format='json'):
-        """
-        Take latitude and longitude coordinates and turn them into
-        a 3 word address.
-
-        Params
-        ------
-        :param BoundingBox bbox: Bounding box, specified by the northeast and
-                            southwest corner coordinates, for which the grid
-                            should be returned.
-        :param string format: Return data format type; can be one of
-                              json (the default), geojson
-        :rtype: dict
-
-        References
-        ----------
-        API Reference: https://docs.what3words.com/api/v3/#grid-section
-        """
-
-        params = {
-            'bounding-box': '{0},{1},{2},{3}'.format(bounding_box.sw.lat, bounding_box.sw.lng, bounding_box.ne.lat, bounding_box.ne.lng),
-            'format': format
-        }
-        return self._request('/grid-section', params)
-
-    def available_languages(self):
+    def available_languages(self) -> Dict:
         """
         Retrieve a list of available 3 word languages.
-
-        :rtype: dict
-
-        References
-        ----------
-        API Reference: https://docs.what3words.com/api/v3/#available-languages
+        :return: Response as a dictionary
         """
+        return self._request("/available-languages")
 
-        return self._request('/available-languages')
-
-    def autosuggest(self, 
-        input, 
-        n_results=None, 
-        focus=None, 
-        n_focus_results=None,
-        clip_to_country=None,
-        clip_to_bounding_box=None,
-        clip_to_circle=None,
-        clip_to_polygon=None,
-        input_type=None,
-        language=None,
-        prefer_land=None):
+    def autosuggest(
+        self,
+        input: str,
+        n_results: Optional[int] = None,
+        focus: Optional["Coordinates"] = None,
+        n_focus_results: Optional[int] = None,
+        clip_to_country: Optional[str] = None,
+        clip_to_bounding_box: Optional["BoundingBox"] = None,
+        clip_to_circle: Optional["Circle"] = None,
+        clip_to_polygon: Optional[List["Coordinates"]] = None,
+        input_type: Optional[str] = None,
+        language: Optional[str] = None,
+        prefer_land: Optional[bool] = None,
+    ) -> Dict:
         """
-        Returns a list of 3 word addresses based on user input and other
-        parameters.
-
-        Params
-        ------
-        :param string input: The full or partial 3 word address to obtain
-                            suggestions for. At minimum this must be the
-                            first two complete words plus at least one
-                            character from the third word
-        :param int n_results: The number of AutoSuggest results to return. A maximum of 100 
-                            results can be specified, if a number greater than this is 
-                            requested, this will be truncated to the maximum. The default is 3
-        :param Coordinates focus: A location, specified as a latitude,longitude used
-                            to refine the results. If specified, the results
-                            will be weighted to give preference to those near
-                            the specified location in addition to considering
-                            similarity to the suggest string. If omitted the
-                            default behaviour is to weight results for
-                            similarity to the suggest string only.
-        :param int n_focus_results: Specifies the number of results (must be <= n_results) 
-                            within the results set which will have a focus. Defaults to 
-                            n_results. This allows you to run autosuggest with a mix of 
-                            focussed and unfocussed results, to give you a "blend" of the two.
-        :param string clip_to_country: Restricts autosuggest to only return results inside the 
-                            countries specified by comma-separated list of uppercase ISO 3166-1 
-                            alpha-2 country codes (for example, to restrict to Belgium and the 
-                            UK, use clip_to_country="GB,BE")
-        :param BoundingBox clip_to_bounding_box: Restrict autosuggest results to a bounding 
-                            box, specified by coordinates.
-        :param Circle clip_to_circle: Restrict autosuggest results to a circle, specified by 
-                            Coordinates representing the center of the circle, and a distance in 
-                            kilometres which represents the radius. For convenience, longitude 
-                            is allowed to wrap around 180 degrees. For example 181 is equivalent 
-                            to -179.
-        :param Coordinates[] clip_to_polygon: Restrict autosuggest results to a polygon, 
-                            specified by a list of Coordinates. The polygon 
-                            should be closed, i.e. the first element should be repeated as the 
-                            last element; also the list should contain at least 4 entries. 
-                            The API is currently limited to accepting up to 25 pairs.
-        :param string input_type: For power users, used to specify voice input mode. Can be 
-                            text (default), vocon-hybrid, nmdp-asr or generic-voice.
-        :param string language: A supported 3 word address language as an
-                            ISO 639-1 2 letter code. Defaults to self.language
-        :param string prefer_land: Makes autosuggest prefer results on land to those in the sea. 
-                            This setting is on by default. Use false to disable this setting and 
-                            receive more suggestions in the sea.
-
-        :rtype: dict
-
-        References
-        ----------
-        API Reference: https://docs.what3words.com/api/v2/#autosuggest
+        Returns a list of 3 word addresses based on user input and other parameters.
+        :param input: The full or partial 3 word address to obtain suggestions for
+        :param n_results: The number of AutoSuggest results to return (max 100)
+        :param focus: Coordinates object used to refine the results
+        :param n_focus_results: Number of results within the results set which will have a focus
+        :param clip_to_country: Restricts autosuggest to only return results inside specified countries
+        :param clip_to_bounding_box: Restrict autosuggest results to a bounding box
+        :param clip_to_circle: Restrict autosuggest results to a circle
+        :param clip_to_polygon: Restrict autosuggest results to a polygon
+        :param input_type: Specify voice input mode
+        :param language: A supported 3 word address language as an ISO 639-1 2 letter code
+        :param prefer_land: Makes autosuggest prefer results on land to those in the sea
+        :return: Response as a dictionary
         """
-
-        params = {
-            'input': input,
-            'language': language or self.language,
-        }
+        params = {"input": input, "language": language or self.language}
         if n_results:
-            params.update({
-                'n-results': '{0}'.format(n_results)
-            })
+            params["n-results"] = str(n_results)
         if focus:
-            params.update({
-                'focus': '{0},{1}'.format(focus.lat, focus.lng)
-            })
+            params["focus"] = f"{focus.lat},{focus.lng}"
         if n_focus_results:
-            params.update({
-                'n-focus-results': '{0}'.format(n_focus_results)
-            })
+            params["n-focus-results"] = str(n_focus_results)
         if clip_to_country:
-            params.update({
-                'clip-to-country': '{0}'.format(clip_to_country)
-            })
+            params["clip-to-country"] = clip_to_country
         if clip_to_bounding_box:
-            params.update({
-                'clip-to-bounding-box': '{0},{1},{2},{3}'.format(clip_to_bounding_box.sw.lat, clip_to_bounding_box.sw.lng, clip_to_bounding_box.ne.lat, clip_to_bounding_box.ne.lng)
-            })
+            params["clip-to-bounding-box"] = (
+                f"{clip_to_bounding_box.sw.lat},{clip_to_bounding_box.sw.lng},{clip_to_bounding_box.ne.lat},{clip_to_bounding_box.ne.lng}"
+            )
         if clip_to_circle:
-            params.update({
-                'clip-to-circle': '{0},{1},{2}'.format(clip_to_circle.center.lat, clip_to_circle.center.lng, clip_to_circle.radius)
-            })
+            params["clip-to-circle"] = (
+                f"{clip_to_circle.center.lat},{clip_to_circle.center.lng},{clip_to_circle.radius}"
+            )
         if clip_to_polygon:
-            params.update({
-                'clip-to-polygon': '{0}'.format(', '.join("{},{}".format(coord.lat, coord.lng) for coord in clip_to_polygon))
-            })
+            params["clip-to-polygon"] = ",".join(
+                f"{coord.lat},{coord.lng}" for coord in clip_to_polygon
+            )
         if input_type:
-            params.update({
-                'input-type': '{0}'.format(input_type)
-            })
+            params["input-type"] = input_type
         if prefer_land is not None:
-            params.update({
-                'prefer-land': '{0}'.format(prefer_land)
-            })
+            params["prefer-land"] = str(prefer_land).lower()
 
-        return self._request('/autosuggest', params)
+        return self._request("/autosuggest", params)
 
-    def defaultLanguage(self, lang=None):
+    def default_language(self, lang: Optional[str] = None) -> str:
         """
         Sets/returns default language
-
-        Params
-        ------
-        :param string lang: new default language
-
-        :retype: string
+        :param lang: New default language
+        :return: Current default language
         """
-        if(lang is not None):
+        if lang:
             self.language = lang
         return self.language
 
-    def defaultEndpoint(self, end_point=None):
+    def default_endpoint(self, end_point: Optional[str] = None) -> str:
         """
-        Sets/returns api endpoint
-
-        Params
-        ------
-        :param string end_point: new api endpoint
-
-        :retype: string url
+        Sets/returns API endpoint
+        :param end_point: New API endpoint
+        :return: Current API endpoint
         """
-        if(end_point is not None):
+        if end_point:
             self.end_point = end_point
         return self.end_point
 
-    def _request(self, url_path, params=None):
+    def _request(self, url_path: str, params: Optional[Dict] = None) -> Dict:
         """
         Executes request
-
-        Params
-        ------
-        :param string url_path: API method URI
-        :param dict params: parameters
-
-        :rtype: dict
+        :param url_path: API method URI
+        :param params: Parameters
+        :return: Response as a dictionary
         """
         if params is None:
             params = {}
 
-        params.update({
-            'key': self.api_key,
-        })
-        url = self.end_point+url_path
-
-        headers = {'X-W3W-Wrapper': 'what3words-Python/{} (Python {}; {})'.format(__version__, platform.python_version(), platform.platform())}
-        r = requests.get(url, params=params, headers=headers)
-        response = r.text
+        params["key"] = self.api_key
+        url = self.end_point + url_path
+        headers = {
+            "X-W3W-Wrapper": f"what3words-Python/{__version__} (Python {platform.python_version()}; {platform.platform()})"
+        }
+        response = requests.get(url, params=params, headers=headers).text
         return json.loads(response)
 
-    def isPossible3wa(self, text):
+    def is_possible_3wa(self, text: str) -> bool:
         """
-        Determines of the string passed in is the form of a three word address.
-        This does not validate whther it is a real address as it returns True for x.x.x
-
-        Params
-        ------
-        :param string text: text to check
-
-        :rtype: bool
+        Determines if the string passed in is in the form of a three word address.
+        :param text: Text to check
+        :return: True if possible 3 word address, False otherwise
         """
-        regex_match = "^/*(?:[^0-9`~!@#$%^&*()+\-_=[{\]}\\|'<,.>?/\";:£§º©®\s]{1,}[.｡。･・︒។։။۔።।][^0-9`~!@#$%^&*()+\-_=[{\]}\\|'<,.>?/\";:£§º©®\s]{1,}[.｡。･・︒។։။۔።।][^0-9`~!@#$%^&*()+\-_=[{\]}\\|'<,.>?/\";:£§º©®\s]{1,}|'<,.>?/\";:£§º©®\s]+[.｡。･・︒។։။۔።।][^0-9`~!@#$%^&*()+\-_=[{\]}\\|'<,.>?/\";:£§º©®\s]+|[^0-9`~!@#$%^&*()+\-_=[{\]}\\|'<,.>?/\";:£§º©®\s]+([\u0020\u00A0][^0-9`~!@#$%^&*()+\-_=[{\]}\\|'<,.>?/\";:£§º©®\s]+){1,3}[.｡。･・︒។։။۔።।][^0-9`~!@#$%^&*()+\-_=[{\]}\\|'<,.>?/\";:£§º©®\s]+([\u0020\u00A0][^0-9`~!@#$%^&*()+\-_=[{\]}\\|'<,.>?/\";:£§º©®\s]+){1,3}[.｡。･・︒។։။۔።।][^0-9`~!@#$%^&*()+\-_=[{\]}\\|'<,.>?/\";:£§º©®\s]+([\u0020\u00A0][^0-9`~!@#$%^&*()+\-_=[{\]}\\|'<,.>?/\";:£§º©®\s]+){1,3})$"
-        return not (None == re.match(regex_match, text))
+        regex_match = r"^\/*(?:[^0-9`~!@#$%^&*()+\-_=\[\{\]}\\|'<>.,?\/\";:£§º©®\s]{1,}[.｡。･・︒។։။۔።।][^0-9`~!@#$%^&*()+\-_=\[\{\]}\\|'<>.,?\/\";:£§º©®\s]{1,}[.｡。･・︒។։။۔።।][^0-9`~!@#$%^&*()+\-_=\[\{\]}\\|'<>.,?\/\";:£§º©®\s]{1,}|[<.,>?\/\";:£§º©®\s]+[.｡。･・︒។։။۔።।][^0-9`~!@#$%^&*()+\-_=\[\{\]}\\|'<>.,?\/\";:£§º©®\s]+|[^0-9`~!@#$%^&*()+\-_=\[\{\]}\\|'<>.,?\/\";:£§º©®\s]+([\u0020\u00A0][^0-9`~!@#$%^&*()+\-_=\[\{\]}\\|'<>.,?\/\";:£§º©®\s]+){1,3}[.｡。･・︒។։။۔።।][^0-9`~!@#$%^&*()+\-_=\[\{\]}\\|'<>.,?\/\";:£§º©®\s]+([\u0020\u00A0][^0-9`~!@#$%^&*()+\-_=\[\{\]}\\|'<>.,?\/\";:£§º©®\s]+){1,3}[.｡。･・︒។։။۔።।][^0-9`~!@#$%^&*()+\-_=\[\{\]}\\|'<>.,?\/\";:£§º©®\s]+([\u0020\u00A0][^0-9`~!@#$%^&*()+\-_=\[\{\]}\\|'<>.,?\/\";:£§º©®\s]+){1,3})$"
+        return re.match(regex_match, text) is not None
 
-    def findPossible3wa(self, text):
+    def find_possible_3wa(self, text: str) -> List[str]:
         """
         Searches the string passed in for all substrings in the form of a three word address.
-        This does not validate whther it is a real address as it will return x.x.x as a result
-
-        Params
-        ------
-        :param string text: text to check
-
-        :rtype: dict
+        :param text: Text to check
+        :return: List of possible 3 word addresses
         """
-        regex_search = "[^0-9`~!@#$%^&*()+\-_=[{\]}\\|'<,.>?/\";:£§º©®\s]{1,}[.｡。･・︒។։။۔።।][^0-9`~!@#$%^&*()+\-_=[{\]}\\|'<,.>?/\";:£§º©®\s]{1,}[.｡。･・︒។։။۔።।][^0-9`~!@#$%^&*()+\-_=[{\]}\\|'<,.>?/\";:£§º©®\s]{1,}"
+        regex_search = r"[^\d`~!@#$%^&*()+\-=\[\]{}\\|'<>.,?\/\";:£§º©®\s]{1,}[.｡。･・︒។։။۔።।][^\d`~!@#$%^&*()+\-=\[\]{}\\|'<>.,?\/\";:£§º©®\s]{1,}[.｡。･・︒។։။۔።।][^\d`~!@#$%^&*()+\-=\[\]{}\\|'<>.,?\/\";:£§º©®\s]{1,}"
         return re.findall(regex_search, text, flags=re.UNICODE)
 
-    def didYouMean(self, text):
+    def did_you_mean(self, text: str) -> bool:
         """
-        Determines of the string passed in is almost in the form of a three word address.
-        This will return True for values such as "filled-count-soap" and "filled count soap"
-
-        Params
-        ------
-        :param string text: text to check
-
-        :rtype: bool
+        Determines if the string passed in is almost in the form of a three word address.
+        :param text: Text to check
+        :return: True if almost a 3 word address, False otherwise
         """
-        regex_match = "^/*[^0-9`~!@#$%^&*()+\-_=[{\]}\\|'<,.>?/\";:£§º©®\s]{1,}[.｡。･・︒។։။۔።। ,\\-_/+'&\\:;|　-]{1,2}[^0-9`~!@#$%^&*()+\-_=[{\]}\\|'<,.>?/\";:£§º©®\s]{1,}[.｡。･・︒។։။۔።। ,\\-_/+'&\\:;|　-]{1,2}[^0-9`~!@#$%^&*()+\-_=[{\]}\\|'<,.>?/\";:£§º©®\s]{1,}$"
-        return not (None == re.match(regex_match, text))
+        regex_didyoumean = r"^\/?[^0-9`~!@#$%^&*()+\-=\[\{\]}\\|'<>.,?\/\";:£§º©®\s]{1,}[.\uFF61\u3002\uFF65\u30FB\uFE12\u17D4\u0964\u1362\u3002:။^_۔։ ,\\\/+'&\\:;|\u3000-]{1,2}[^0-9`~!@#$%^&*()+\-=\[\{\]}\\|'<>.,?\/\";:£§º©®\s]{1,}[.\uFF61\u3002\uFF65\u30FB\uFE12\u17D4\u0964\u1362\u3002:။^_۔։ ,\\\/+'&\\:;|\u3000-]{1,2}[^0-9`~!@#$%^&*()+\-=\[\{\]}\\|'<>.,?\/\";:£§º©®\s]{1,}$"
+        return re.match(regex_didyoumean, text) is not None
 
-    def isValid3wa(self, text):
+    def is_valid_3wa(self, text: str) -> bool:
         """
-        Determines of the string passed in is a real three word address.  It calls the API
-        to verify it refers to an actual plac eon earth.
-
-        Params
-        ------
-        :param string text: text to check
-
-        :rtype: bool
+        Determines if the string passed in is a real three word address by calling the API.
+        :param text: Text to check
+        :return: True if valid 3 word address, False otherwise
         """
-        if self.isPossible3wa(text):
+        if self.is_possible_3wa(text):
             result = self.autosuggest(text, n_results=1)
-            if len(result["suggestions"]) > 0:
-                if result["suggestions"][0]["words"] == text:
-                    return True
+            if result["suggestions"] and result["suggestions"][0]["words"] == text:
+                return True
         return False
 
 
-class Coordinates(object):
+class Coordinates:
     """
     A Coordinate represents (latitude, longitude) coordinates encoded according to the World Geodetic System (WGS84).
-    ==========
     """
 
-    def __init__(self,lat,lng):
+    def __init__(self, lat: float, lng: float):
         """
         Constructor
-        Params
-        ------
-        :param lat: the latitude
-        :param lng: the longitude
+        :param lat: Latitude
+        :param lng: Longitude
         """
         self.lat = lat
         self.lng = lng
 
-    def __eq__(self, other):
+    def __eq__(self, other: "Coordinates") -> bool:
         return self.lng == other.lng and self.lat == other.lat
 
-    def __str__(self):
-        return '<{0}, {1}>'.format(self.lat, self.lng)
-    
-    def __repr__(self):
-        return 'Coordinate({0}, {1})'.format(self.lat, self.lng)
+    def __str__(self) -> str:
+        return f"<{self.lat}, {self.lng}>"
 
-class BoundingBox(object):
+    def __repr__(self) -> str:
+        return f"Coordinates({self.lat}, {self.lng})"
+
+
+class BoundingBox:
     """
-    A BoundingBox represents which which represents a range of latitudes and longitudes.
-    ==========
+    A BoundingBox represents a range of latitudes and longitudes.
     """
 
-    def __init__(self,sw,ne):
+    def __init__(self, sw: Coordinates, ne: Coordinates):
         """
         Constructor
-        Params
-        ------
-        :param sw: the coordinates of the southwest corner
-        :param ne: the coordinates of the northeast corner
+        :param sw: Coordinates of the southwest corner
+        :param ne: Coordinates of the northeast corner
         """
         self.sw = sw
         self.ne = ne
 
-    def __eq__(self, other):
+    def __eq__(self, other: "BoundingBox") -> bool:
         return self.sw == other.sw and self.ne == other.ne
-        
-    def __str__(self):
-        return '<{0}, {1}>'.format(self.sw, self.ne)
-    
-    def __repr__(self):
-        return 'BoundingBox({0}, {1})'.format(repr(self.sw), repr(self.ne))
 
-class Circle(object):
+    def __str__(self) -> str:
+        return f"<{self.sw}, {self.ne}>"
+
+    def __repr__(self) -> str:
+        return f"BoundingBox({repr(self.sw)}, {repr(self.ne)})"
+
+
+class Circle:
     """
-    A Circle represented by center Coordinates, and a radius in kilometres
-    ==========
+    A Circle represented by center Coordinates, and a radius in kilometers.
     """
 
-    def __init__(self,center,radius):
+    def __init__(self, center: Coordinates, radius: float):
         """
         Constructor
-        Params
-        ------
-        :param sw: the coordinates of the southwest corner
-        :param ne: the coordinates of the northeast corner
+        :param center: Coordinates of the center of the circle
+        :param radius: Radius of the circle in kilometers
         """
         self.center = center
         self.radius = radius
 
-    def __eq__(self, other):
+    def __eq__(self, other: "Circle") -> bool:
         return self.center == other.center and self.radius == other.radius
-        
-    def __str__(self):
-        return '<{0}, {1}>'.format(self.center, self.radius)
-    
-    def __repr__(self):
-        return 'BoundingBox({0}, {1})'.format(repr(self.center), repr(self.radius))
+
+    def __str__(self) -> str:
+        return f"<{self.center}, {self.radius}>"
+
+    def __repr__(self) -> str:
+        return f"Circle({repr(self.center)}, {self.radius})"
