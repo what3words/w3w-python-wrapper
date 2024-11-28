@@ -38,12 +38,16 @@ class Geocoder:
         Convert a 3 word address into coordinates.
         :param words: A 3 word address as a string
         :param format: Return data format type; can be 'json' (default) or 'geojson'
+        :param locale: A supported locale as an ISO 639-1 2 letter code
         :return: Response as a dictionary
         """
         params = {"words": words, "format": format, "locale": locale}
         if locale:
             params["locale"] = locale
-        return self._request("/convert-to-coordinates", params)
+        response = self._request("/convert-to-coordinates", params)
+        if "error" in response:
+            return {"error": response["error"]}
+        return response
 
     def convert_to_3wa(
         self,
@@ -57,6 +61,7 @@ class Geocoder:
         :param coordinates: Coordinates object
         :param format: Return data format type; can be 'json' (default) or 'geojson'
         :param language: A supported 3 word address language as an ISO 639-1 2 letter code. Defaults to self.language
+        :param locale: A supported locale as an ISO 639-1 2 letter code
         :return: Response as a dictionary
         """
         params = {
@@ -67,7 +72,11 @@ class Geocoder:
         }
         if locale:
             params["locale"] = locale
-        return self._request("/convert-to-3wa", params)
+
+        response = self._request("/convert-to-3wa", params)
+        if "error" in response:
+            return {"error": response["error"]}
+        return response
 
     def grid_section(self, bounding_box: "BoundingBox", format: str = "json") -> Dict:
         """
@@ -80,14 +89,20 @@ class Geocoder:
             "bounding-box": f"{bounding_box.sw.lat},{bounding_box.sw.lng},{bounding_box.ne.lat},{bounding_box.ne.lng}",
             "format": format,
         }
-        return self._request("/grid-section", params)
+        response = self._request("/grid-section", params)
+        if "error" in response:
+            return {"error": response["error"]}
+        return response
 
     def available_languages(self) -> Dict:
         """
         Retrieve a list of available 3 word languages.
         :return: Response as a dictionary
         """
-        return self._request("/available-languages")
+        response = self._request("/available-languages")
+        if "error" in response:
+            return {"error": response["error"]}
+        return response
 
     def autosuggest(
         self,
@@ -102,6 +117,7 @@ class Geocoder:
         input_type: Optional[str] = None,
         language: Optional[str] = None,
         prefer_land: Optional[bool] = None,
+        locale: Optional[str] = None,
     ) -> Dict:
         """
         Returns a list of 3 word addresses based on user input and other parameters.
@@ -116,6 +132,7 @@ class Geocoder:
         :param input_type: Specify voice input mode
         :param language: A supported 3 word address language as an ISO 639-1 2 letter code
         :param prefer_land: Makes autosuggest prefer results on land to those in the sea
+        :param locale: A supported locale as an ISO 639-1 2 letter code
         :return: Response as a dictionary
         """
         params = {"input": input, "language": language or self.language}
@@ -143,8 +160,12 @@ class Geocoder:
             params["input-type"] = input_type
         if prefer_land is not None:
             params["prefer-land"] = str(prefer_land).lower()
-
-        return self._request("/autosuggest", params)
+        if locale:
+            params["locale"] = locale
+        response = self._request("/autosuggest", params)
+        if "error" in response:
+            return {"error": response["error"]}
+        return response
 
     def default_language(self, lang: Optional[str] = None) -> str:
         """

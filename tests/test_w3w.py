@@ -36,7 +36,8 @@ class TestGeocoder(unittest.TestCase):
 
     def test_locale_with_convert_to_coordinates(self):
         # Test conversion to coordinates with a valid 3-word address and locale
-        result = self.geocoder.convert_to_coordinates(addr)
+        result = self.geocoder.convert_to_coordinates("напомена.илузија.дирљив")
+        print(result)
         if "error" in result:
             print(f"API error code: {result['error']['code']}")
             # Handle the Quota Exceeded error specifically for this function
@@ -47,7 +48,7 @@ class TestGeocoder(unittest.TestCase):
             )
         else:
             self.assertEqual(result["language"], "oo")
-            self.assertEqual(result["locale"], "oo_la")
+            self.assertEqual(result["locale"], "oo_cy")
             self.assertEqual(result["coordinates"]["lat"], lat)
             self.assertEqual(result["coordinates"]["lng"], lng)
 
@@ -76,6 +77,35 @@ class TestGeocoder(unittest.TestCase):
             )  # Adjust expected words
             self.assertEqual(result["coordinates"]["lat"], lat)
             self.assertEqual(result["coordinates"]["lng"], lng)
+
+    def test_locale_with_autosuggest(self):
+        # Test autosuggest with a valid partial 3-word address and a specific locale
+        partial_address = "напомена.илузија.дирљи"
+        locale = "oo_cy"
+
+        result = self.geocoder.autosuggest(partial_address, locale=locale, language=locale)
+        print(result)
+
+        if "error" in result:
+            print(f"API error code: {result['error']['code']}")
+            # Handle the Quota Exceeded error specifically for this function
+            self.assertEqual(
+                result["error"]["code"],
+                "QuotaExceeded",
+                "Expected QuotaExceeded error for Autosuggest with locale",
+            )
+        else:
+            # Validate the locale and language in the response
+            self.assertIn("suggestions", result, "Expected 'suggestions' in the response")
+            self.assertGreater(len(result["suggestions"]), 0, "Expected at least one suggestion")
+            
+            # Check the language and locale of the first suggestion
+            first_suggestion = result["suggestions"][0]
+            self.assertEqual(first_suggestion["language"], "oo", "Language does not match the expected locale")
+            self.assertTrue(
+                first_suggestion["words"].startswith(partial_address),
+                "First suggestion does not match the input partial address"
+            )
 
     def test_available_languages(self):
         # Test available languages
@@ -132,36 +162,64 @@ class TestGeocoder(unittest.TestCase):
         )
 
     def test_grid_section(self):
-        # Test grid section functionality with a bounding box
         sw = Coordinates(52.208867, 0.117540)
         ne = Coordinates(52.207988, 0.116126)
         bb = BoundingBox(sw, ne)
-
         result = self.geocoder.grid_section(bb)
-        self.assertIsNotNone(result["lines"])
+        print(result)  # Debugging output
 
-    def test_invalid_address(self):
-        # Test invalid address
-        invalid_addr = "invalid.address.test"
-        result = self.geocoder.convert_to_coordinates(invalid_addr)
         if "error" in result:
-            print(f"API error code: {result['error']['code']}")
-            # Handle the Quota Exceeded error specifically for this function
             self.assertEqual(
                 result["error"]["code"],
                 "QuotaExceeded",
-                "Expected QuotaExceeded error for Convert to 3wa",
+                "Expected QuotaExceeded error due to plan limitations or exceeded quota.",
             )
         else:
-            self.assertEqual(result["error"]["code"], "BadWords")
+            self.assertIn("lines", result, "Expected 'lines' in the response")
+            self.assertIsNotNone(result["lines"])
+
+    def test_invalid_address(self):
+        invalid_addr = "invalid.address"
+        result = self.geocoder.convert_to_coordinates(invalid_addr)
+        print(result)  # Debugging output
+
+        if "error" in result:
+            if result["error"]["code"] == "QuotaExceeded":
+                self.assertEqual(
+                    result["error"]["code"],
+                    "QuotaExceeded",
+                    "Expected QuotaExceeded error due to exceeded quota or restricted API key.",
+                )
+            else:
+                self.assertEqual(
+                    result["error"]["code"],
+                    "BadWords",
+                    "Expected BadWords error for invalid address.",
+                )
+        else:
+            self.fail("Expected an error in the response, but none was returned.")  
 
     def test_invalid_coordinates(self):
-        # Test invalid coordinates to 3-word address conversion
         invalid_lat = 100.0
         invalid_lng = 200.0
         result = self.geocoder.convert_to_3wa(Coordinates(invalid_lat, invalid_lng))
-        self.assertIn("error", result)
-        self.assertEqual(result["error"]["code"], "BadCoordinates")
+        print(result)  # Debugging output
+
+        if "error" in result:
+            if result["error"]["code"] == "QuotaExceeded":
+                self.assertEqual(
+                    result["error"]["code"],
+                    "QuotaExceeded",
+                    "Expected QuotaExceeded error due to plan limitations or exceeded quota.",
+                )
+            else:
+                self.assertEqual(
+                    result["error"]["code"],
+                    "BadCoordinates",
+                    "Expected BadCoordinates error for invalid coordinates.",
+                )
+        else:
+            self.fail("Expected an error in the response but got none.")
 
     def test_partial_autosuggest(self):
         # Test partial autosuggest functionality
@@ -210,6 +268,8 @@ class TestGeocoder(unittest.TestCase):
         invalid_input = "index.home"
         self.assertFalse(self.geocoder.did_you_mean(invalid_input))
 
+
+    
 
 if __name__ == "__main__":
     unittest.main()
